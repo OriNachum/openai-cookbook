@@ -1,0 +1,1 @@
+/workspaces/openai-cookbook/examples/data/vector_database_wikipedia_articles_embedded.csv filter=lfs diff=lfs merge=lfs -text
