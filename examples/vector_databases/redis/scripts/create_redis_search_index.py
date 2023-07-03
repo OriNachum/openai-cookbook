@@ -7,9 +7,11 @@ from redis.commands.search.indexDefinition import (
     IndexType
 )
 
+import sys
+
 def create_redis_search_index(data, redis_client):
     # Constants
-    VECTOR_DIM = len(data['title_vector'][0]) # length of the vectors
+    VECTOR_DIM = len(data['question_vector'][0]) # length of the vectors
     VECTOR_NUMBER = len(data)                 # initial number of vectors
     INDEX_NAME = "embeddings-index"           # name of the search index
     PREFIX = "doc"                            # prefix for the document keys
@@ -19,7 +21,7 @@ def create_redis_search_index(data, redis_client):
     title = TextField(name="title")
     url = TextField(name="url")
     text = TextField(name="text")
-    title_embedding = VectorField("title_vector",
+    title_embedding = VectorField("question_vector",
         "FLAT", {
             "TYPE": "FLOAT32",
             "DIM": VECTOR_DIM,
@@ -27,7 +29,7 @@ def create_redis_search_index(data, redis_client):
             "INITIAL_CAP": VECTOR_NUMBER,
         }
     )
-    text_embedding = VectorField("content_vector",
+    text_embedding = VectorField("answer_vector",
         "FLAT", {
             "TYPE": "FLOAT32",
             "DIM": VECTOR_DIM,
@@ -37,17 +39,25 @@ def create_redis_search_index(data, redis_client):
     )
     fields = [title, url, text, title_embedding, text_embedding]
 
-    return_message = ""
     # Check if index exists
     try:
         redis_client.ft(INDEX_NAME).info()
-        return_message = "Index already exists"
+        index_exists = True
     except:
-        # Create RediSearch Index
-        redis_client.ft(INDEX_NAME).create_index(
-            fields = fields,
-            definition = IndexDefinition(prefix=[PREFIX], index_type=IndexType.HASH)
-        )
-        return_message = "Created index"  
-    
-    return return_message
+        index_exists = False
+
+    if index_exists:
+        delete_index = input(f"Index {INDEX_NAME} already exists. Do you want to delete it? (y/n): ")
+        if delete_index.lower() == 'y':
+            #redis_client.ft(INDEX_NAME).drop_index()
+            print(f"Index {INDEX_NAME} deleted.")
+        else:
+            print("Index creation skipped.")
+            sys.exit()
+
+    # Create RediSearch Index
+    redis_client.ft(INDEX_NAME).create_index(
+        fields = fields,
+        definition = IndexDefinition(prefix=[PREFIX], index_type=IndexType.HASH)
+    )
+    print("Created index")

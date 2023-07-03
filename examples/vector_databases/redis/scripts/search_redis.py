@@ -14,8 +14,8 @@ def search_redis(
     redis_client: redis.Redis,
     user_query: str,
     index_name: str = "embeddings-index",
-    vector_field: str = "title_vector",
-    return_fields: list = ["title", "url", "text", "vector_score"],
+    vector_field: str = "question_vector",
+    return_fields: list = ["question", "answer", "date", "quality","qualityreason", "vector_score"],
     hybrid_fields = "*",
     k: int = 20,
     print_results: bool = True,
@@ -42,7 +42,7 @@ def search_redis(
     if print_results:
         for i, article in enumerate(results.docs):
             score = 1 - float(article.vector_score)
-            print(f"{i}. {article.title} (Score: {round(score ,3) })")
+            print(f"{i}. {article.question} (Score: {round(score ,3) })")
     return results.docs
 
 # Vector search 
@@ -59,7 +59,7 @@ def search_redis(
 # 8. Central Europe (Score: 0.843)
 # 9. European (Score: 0.841)
 
-# results = search_redis(redis_client, 'Famous battles in Scottish history', vector_field='content_vector', k=10)
+# results = search_redis(redis_client, 'Famous battles in Scottish history', vector_field='answer_vector', k=10)
 # 0. Battle of Bannockburn (Score: 0.869)
 # 1. Wars of Scottish Independence (Score: 0.861)
 # 2. 1651 (Score: 0.853)
@@ -79,7 +79,7 @@ def search_redis(
 # # search the content vector for articles about famous battles in Scottish history and only include results with Scottish in the title
 # results = search_redis(redis_client,
 #                        "Famous battles in Scottish history",
-#                        vector_field="title_vector",
+#                        vector_field="question_vector",
 #                        k=5,
 #                        hybrid_fields=create_hybrid_field("embeddingType", "External")
 #                        )
