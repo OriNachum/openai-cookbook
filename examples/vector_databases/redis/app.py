@@ -1,3 +1,4 @@
+import datetime
 import redis
 from fastapi import FastAPI
 from scripts.search_redis import search_redis
@@ -5,8 +6,11 @@ from pydantic import BaseModel
 from typing import List
 
 class Item(BaseModel):
-    key: str
-    value: str
+    question: str
+    answer: str
+    date: datetime
+    quality: int
+    qualityreason: str
 
 app = FastAPI()
 
