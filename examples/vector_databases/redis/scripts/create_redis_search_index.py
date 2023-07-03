@@ -47,13 +47,13 @@ def create_redis_search_index(data, redis_client):
         index_exists = False
 
     if index_exists:
-        delete_index = input(f"Index {INDEX_NAME} already exists. Do you want to delete it? (y/n): ")
-        if delete_index.lower() == 'y':
-            #redis_client.ft(INDEX_NAME).drop_index()
-            print(f"Index {INDEX_NAME} deleted.")
-        else:
-            print("Index creation skipped.")
-            sys.exit()
+        print("Index creation skipped.")
+        sys.exit()
+        # delete_index = input(f"Index {INDEX_NAME} already exists. Do you want to delete it? (y/n): ")
+        # if delete_index.lower() == 'y':
+        #     #redis_client.ft(INDEX_NAME).drop_index()
+        #     print(f"Index {INDEX_NAME} deleted.")
+        # else:
 
     # Create RediSearch Index
     redis_client.ft(INDEX_NAME).create_index(
