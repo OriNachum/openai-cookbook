@@ -1,13 +1,27 @@
 import redis
 from fastapi import FastAPI
 from scripts.search_redis import search_redis
+from pydantic import BaseModel
+from typing import List
+
+class Item(BaseModel):
+    key: str
+    value: str
 
 app = FastAPI()
 
-# @app.post("/index")
-# async def index(item: IndexItem):
-#     your_redis_module.index(item.data)  # call your index method
-#     return {"message": "Indexed successfully"}
+@app.post("/search")
+async def insert(items: List[Item]):
+    return "Not implemented yet"
+
+@app.put("/search")
+async def update(query: str):
+    return "Not implemented yet"
+
+@app.delete("/search")
+async def delete(query: str):
+    return "Not implemented yet"
+
 
 @app.get("/search/{query}")
 async def search(query: str):
