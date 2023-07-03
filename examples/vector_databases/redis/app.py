@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 import redis
 from fastapi import FastAPI
 from scripts.search_redis import search_redis
@@ -8,7 +8,7 @@ from typing import List
 class Item(BaseModel):
     question: str
     answer: str
-    date: datetime
+    date: date
     quality: int
     qualityreason: str
 
