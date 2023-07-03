@@ -2,3 +2,5 @@ redis
 wget
 pandas
 openai
+fastapi
+uvicorn
