@@ -34,7 +34,7 @@ def download_wikipedia_data(
         print(f"File downloaded to {data_path}")
 
 
-def read_wikipedia_data(data_path: str = '../../data/', file_name: str = "vector_database_wikipedia_articles_embedded") -> pd.DataFrame:
+def read_wikipedia_data(data_path: str = './', file_name: str = "dataEmbedded") -> pd.DataFrame:
 
     csv_file_path = os.path.join(data_path, file_name + ".csv")
     data = pd.read_csv(csv_file_path)
