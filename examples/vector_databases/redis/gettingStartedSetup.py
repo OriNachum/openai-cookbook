@@ -17,8 +17,7 @@ if os.getcwd() not in sys.path:
     sys.path.append(os.getcwd())
 
 
-add_embeddings_to_csv("data.csv")
-exit()
+#add_embeddings_to_csv("dataEmbedded.csv")
 # nbutils.download_wikipedia_data() # already done
 data = nbutils.read_wikipedia_data()
 
