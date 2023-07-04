@@ -19,7 +19,8 @@ def convert_newrecordlist_to_csv(records: List[NewRecord], filename: str):
 
     with open(filename, mode=mode, newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["question", "answer", "date", "company_name", "company_size", "company_location", "company_industry"])  # Write the header
-
+        writer.writerow(["id","question", "answer", "date", "company_name", "company_size", "company_location", "company_industry"])  # Write the header
+        id = 0 
         for record in records:
-            writer.writerow([record.question, record.answer, record.date, record.company_name, record.company_size, record.company_location, record.company_industry])
+            writer.writerow([id, record.question, record.answer, record.date, record.company_name, record.company_size, record.company_location, record.company_industry])
+            id += 1
