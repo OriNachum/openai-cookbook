@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 
-from create_embedding import create_embedding
+from scripts.create_embedding import create_embedding
 
 def add_embeddings_to_csv(file_path: str):
     df = pd.read_csv(file_path)
