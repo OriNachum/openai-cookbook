@@ -18,13 +18,17 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
 def add_records(redis_client: redis.Redis, records: List[dict]):
     # Generate embeddings for each record
     for record in records:
-        question_vector = create_embedding(record["question"])
-        answer_vector = create_embedding(record["answer"])
+        if "question" in record and "answer" in record:
+            question_vector = create_embedding(record["question"])
+            answer_vector = create_embedding(record["answer"])
 
-        # Update the record with embeddings and vector_id
-        record["question_vector"] = question_vector
-        record["answer_vector"] = answer_vector
-        record["vector_id"] = get_next_vector_id(redis_client)
+            record["question_vector"] = question_vector
+            record["answer_vector"] = answer_vector
+            record["vector_id"] = get_next_vector_id(redis_client)
+
+            redis_client.hset("records", record["question"], str(record))
+        else:
+            raise ValueError("Invalid record format. 'question' and 'answer' keys are required.")
 
     # Add the records to Redis in a pipeline for efficient bulk insert
     pipeline = redis_client.pipeline()
