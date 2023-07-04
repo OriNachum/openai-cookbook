@@ -1,7 +1,25 @@
 import redis
+from datetime import date
+from scripts.index_documents import index_documents
+import pandas as pd
 
 from scripts.create_embedding import create_embedding
 from typing import List
+from pydantic import BaseModel
+
+# Define Pydantic models
+class NewRecord(BaseModel):
+    question: str
+    answer: str
+    question_vector: str
+    answer_vector: str
+    vector_id: int
+    date: date
+    company_name: str
+    company_size: str
+    company_location: str
+    company_industry: str
+
 
 def get_next_vector_id(redis_client: redis.Redis) -> int:
     vector_id_key = "vector_id_counter"
@@ -15,23 +33,18 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
     return vector_id
 
 
-def add_records(redis_client: redis.Redis, records: List[dict]):
+def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     # Generate embeddings for each record
+    PREFIX = "doc"  # prefix for the document keys
+
+    records_df = pd.DataFrame(records)
     for record in records:
-        if "question" in record and "answer" in record:
-            question_vector = create_embedding(record["question"])
-            answer_vector = create_embedding(record["answer"])
+        question_vector = create_embedding(record["question"])
+        answer_vector = create_embedding(record["answer"])
 
-            record["question_vector"] = question_vector
-            record["answer_vector"] = answer_vector
-            record["vector_id"] = get_next_vector_id(redis_client)
+        record["question_vector"] = question_vector
+        record["answer_vector"] = answer_vector
+        record["vector_id"] = get_next_vector_id(redis_client)
 
-            redis_client.hset("records", record["question"], str(record))
-        else:
-            raise ValueError("Invalid record format. 'question' and 'answer' keys are required.")
 
-    # Add the records to Redis in a pipeline for efficient bulk insert
-    pipeline = redis_client.pipeline()
-    for record in records:
-        pipeline.hset("records", record["question"], str(record))
-    pipeline.execute()
+    index_documents(redis_client, PREFIX, records_df)
