@@ -23,12 +23,12 @@ app = FastAPI()
 # Define Pydantic models
 class NewRecord(BaseModel):
     question: str
-    answer: str
-    date: date
-    company_name: str
-    company_size: str
-    company_location: str
-    company_industry: str
+#    answer: str
+#    date: date
+    companyName: str
+    companySize: str
+    companyCountry: str
+    companyIndustry: str
 
 class UpdateRecord(BaseModel):
     question: str
@@ -43,8 +43,18 @@ class DeleteRecord(BaseModel):
 # In-memory storage for simplicity. Replace with actual database in production.
 records = []
 
-@app.post("/search/")
+@app.post("/embedded/index-models")
 async def create_records_endpoint(records: List[NewRecord]):
+    await create_records_internal(records)
+    return {"detail": "Records created"}
+
+@app.post("/embedded/index-model")
+async def create_records_endpoint(record: NewRecord):
+    records=[record]
+    await create_records_internal(records)
+    return {"detail": "Record created"}
+
+async def create_records_internal(records: List[NewRecord]):
     redis_host = "localhost"  # replace with your Redis ",host
     redis_port = 6379         # replace with your Redis port
     redis_password = ""       # replace with your Redis password if any
@@ -52,9 +62,9 @@ async def create_records_endpoint(records: List[NewRecord]):
 
     # Here, you should implement logic to add new records to your database
     add_records(redis_client, records)
-    return {"detail": "Records created"}
 
-@app.put("/search/")
+
+@app.put("/embedded/rate-model")
 async def update_record_endpoint(record: UpdateRecord):
     redis_host = "localhost"  # replace with your Redis ",host
     redis_port = 6379         # replace with your Redis port
@@ -66,7 +76,7 @@ async def update_record_endpoint(record: UpdateRecord):
     update_record(redis_client, record.question, record.vote, record.vote_reason)
     return {"detail": "Record updated"}
 
-@app.delete("/search/")
+@app.delete("/embedded/remove-model")
 async def delete_record_endpoint(record: DeleteRecord):
     redis_host = "localhost"  # replace with your Redis ",host
     redis_port = 6379         # replace with your Redis port
@@ -78,13 +88,13 @@ async def delete_record_endpoint(record: DeleteRecord):
     delete_record(redis_client, record.question, record.delete_reason, record.delete_owner)
     return {"detail": "Record deleted"}
 
-@app.get("/search/{query}")
-async def search(query: str):
+@app.get("/questions/{question}")
+async def search(question: str):
     redis_host = "localhost"  # replace with your Redis ",host
     redis_port = 6379         # replace with your Redis port
     redis_password = ""       # replace with your Redis password if any
 
     redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
 
-    results = search_redis(redis_client, query, vector_field='question_vector', k=3)  # call your search method
+    results = search_redis(redis_client, question, vector_field='question_vector', k=3)  # call your search method
     return results

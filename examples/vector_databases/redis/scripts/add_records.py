@@ -20,10 +20,10 @@ class NewRecord(BaseModel):
     answer_vector: str
     vector_id: int
     date: date
-    company_name: str
-    company_size: str
-    company_location: str
-    company_industry: str
+    companyName: str
+    companySize: str
+    companyCountry: str
+    companyIndustry: str
 
 
 def get_next_vector_id(redis_client: redis.Redis) -> int:
