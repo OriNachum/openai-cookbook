@@ -1,8 +1,8 @@
 import sys
 import os
 import openai
-from scripts.add_embeddings_to_csv import add_embeddings_to_csv
-import nbutils
+#from scripts.add_embeddings_to_csv import add_embeddings_to_csv
+import scripts.nbutils as nbutils
 
 
 from scripts.do_validate_key import do_validate_key

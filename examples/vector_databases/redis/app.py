@@ -38,7 +38,6 @@ async def create_records_endpoint(records: List[NewRecord]):
     redis_host = "localhost"  # replace with your Redis ",host
     redis_port = 6379         # replace with your Redis port
     redis_password = ""       # replace with your Redis password if any
-
     redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
 
     # Here, you should implement logic to add new records to your database
