@@ -3,6 +3,9 @@ from datetime import date
 from fastapi import FastAPI, HTTPException
 from typing import Optional, List
 from pydantic import BaseModel
+from scripts.delete_record import delete_record
+from scripts.update_record import update_record
+from scripts.add_records import add_records
 from scripts.search_redis import search_redis
 
 app = FastAPI()
@@ -31,29 +34,41 @@ class DeleteRecord(BaseModel):
 records = []
 
 @app.post("/search/")
-async def create_record(record: List[NewRecord]):
-    # Here, you should implement logic to add a new record to your database
-    records.append(record.dict())
-    return {"detail": "Record created"}
+async def create_records_endpoint(records: List[NewRecord]):
+    redis_host = "localhost"  # replace with your Redis ",host
+    redis_port = 6379         # replace with your Redis port
+    redis_password = ""       # replace with your Redis password if any
+
+    redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
+
+    # Here, you should implement logic to add new records to your database
+    for record in records:
+        add_records(redis_client, record.dict())
+    return {"detail": "Records created"}
 
 @app.put("/search/")
-async def update_record(record: UpdateRecord):
+async def update_record_endpoint(record: UpdateRecord):
+    redis_host = "localhost"  # replace with your Redis ",host
+    redis_port = 6379         # replace with your Redis port
+    redis_password = ""       # replace with your Redis password if any
+
+    redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
+
     # Here, you should implement logic to update an existing record in your database
-    for r in records:
-        if r['question'] == record.question:
-            r['vote'] = record.vote
-            r['vote_reason'] = record.vote_reason
-            return {"detail": "Record updated"}
-    raise HTTPException(status_code=404, detail="Record not found")
+    update_record(redis_client, record.question, record.vote, record.vote_reason)
+    return {"detail": "Record updated"}
 
 @app.delete("/search/")
-async def delete_record(record: DeleteRecord):
+async def delete_record_endpoint(record: DeleteRecord):
+    redis_host = "localhost"  # replace with your Redis ",host
+    redis_port = 6379         # replace with your Redis port
+    redis_password = ""       # replace with your Redis password if any
+
+    redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
+
     # Here, you should implement logic to delete a record from your database
-    for r in records:
-        if r['question'] == record.question:
-            records.remove(r)
-            return {"detail": "Record deleted"}
-    raise HTTPException(status_code=404, detail="Record not found")
+    delete_record(redis_client, record.question, record.delete_reason, record.delete_owner)
+    return {"detail": "Record deleted"}
 
 @app.get("/search/{query}")
 async def search(query: str):
