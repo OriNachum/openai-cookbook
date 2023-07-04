@@ -6,4 +6,4 @@ fastapi
 uvicorn
 pydantic
 datetime
-dotenv
+python-dotenv
