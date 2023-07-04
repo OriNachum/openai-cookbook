@@ -1,4 +1,4 @@
-    import openai
+import openai
 
     def create_embedding(user_query: str) -> list:
         # Creates embedding vector from user query
