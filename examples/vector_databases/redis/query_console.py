@@ -1,6 +1,10 @@
 import redis
 
 from scripts.search_redis import search_redis
+from dotenv import dotenv_values
+
+# Load environment variables from .env file
+env_vars = dotenv_values('.env')
 
 def run_query_loop(redis_client):
     while True:
