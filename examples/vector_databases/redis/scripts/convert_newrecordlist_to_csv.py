@@ -6,7 +6,7 @@ from datetime import date
 from scripts.generate_unique_public_id import generate_unique_public_id
 
 class NewRecord:
-    def __init__(self, question: str, answer: str, date: date, company_name: str, company_size: str, company_location: str, company_industry: str):
+    def __init__(self, question: str, company_name: str, company_size: str, company_location: str, company_industry: str):
         self.question = question
         #self.answer = answer
         #self.date = date
