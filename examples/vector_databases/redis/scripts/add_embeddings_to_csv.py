@@ -1,13 +1,7 @@
 import pandas as pd
-import openai
 import csv
 
-def create_embedding(user_query: str) -> list:
-    # Creates embedding vector from user query
-    embedded_query = openai.Embedding.create(input=user_query,
-                                             model="text-embedding-ada-002",
-                                            )["data"][0]['embedding']
-    return embedded_query
+from create_embedding import create_embedding
 
 def add_embeddings_to_csv(file_path: str):
     df = pd.read_csv(file_path)
