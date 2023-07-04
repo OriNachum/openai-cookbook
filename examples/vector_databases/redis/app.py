@@ -8,6 +8,12 @@ from scripts.update_record import update_record
 from scripts.add_records import add_records
 from scripts.search_redis import search_redis
 
+from dotenv import dotenv_values
+
+# Load environment variables from .env file
+env_vars = dotenv_values('.env')
+
+
 app = FastAPI()
 
 # Define Pydantic models

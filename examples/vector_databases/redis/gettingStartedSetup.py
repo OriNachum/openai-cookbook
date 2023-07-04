@@ -10,6 +10,11 @@ from scripts.connect_to_redis import get_redis_client
 from scripts.create_redis_search_index import create_redis_search_index
 from examples.vector_databases.redis.scripts.index_documents import index_documents
 
+from dotenv import dotenv_values
+
+# Load environment variables from .env file
+env_vars = dotenv_values('.env')
+
 VALIDATE_KEY_RESULT = do_validate_key(openai)
 print(VALIDATE_KEY_RESULT)
 
