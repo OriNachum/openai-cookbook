@@ -42,8 +42,7 @@ async def create_records_endpoint(records: List[NewRecord]):
     redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
 
     # Here, you should implement logic to add new records to your database
-    for record in records:
-        add_records(redis_client, record.dict())
+    add_records(redis_client, records)
     return {"detail": "Records created"}
 
 @app.put("/search/")
