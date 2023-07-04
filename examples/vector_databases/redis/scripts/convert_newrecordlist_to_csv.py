@@ -1,4 +1,5 @@
 import csv
+import os
 from typing import List
 from datetime import date
 
@@ -13,7 +14,10 @@ class NewRecord:
         self.company_industry = company_industry
 
 def convert_newrecordlist_to_csv(records: List[NewRecord], filename: str):
-    with open(filename, mode='x', newline='') as file:
+    file_exists = os.path.isfile(filename)
+    mode = 'a+' if file_exists else 'w'
+
+    with open(filename, mode=mode, newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["question", "answer", "date", "company_name", "company_size", "company_location", "company_industry"])  # Write the header
 
