@@ -12,7 +12,7 @@ class NewRecord:
         #self.date = date
         self.companyName = company_name
         self.companySize = company_size
-        self.companyLocation = company_location
+        self.companyCountry = company_location
         self.companyIndustry = company_industry
 
 def convert_newrecordlist_to_csv(records: List[NewRecord], filename: str):
@@ -21,7 +21,7 @@ def convert_newrecordlist_to_csv(records: List[NewRecord], filename: str):
 
     with open(filename, mode=mode, newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["id","question", "company_name", "company_size", "company_location", "company_industry"])  # Write the header
+        writer.writerow(["id","question", "company_name", "company_size", "company_country", "company_industry"])  # Write the header
         for record in records:
             id=generate_unique_public_id()
-            writer.writerow([id, record.question, record.companyName, record.companySize, record.companyLocation, record.companyIndustry])
+            writer.writerow([id, record.question, record.companyName, record.companySize, record.companyCountry, record.companyIndustry])
