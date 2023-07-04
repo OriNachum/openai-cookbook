@@ -37,7 +37,8 @@ def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     # Generate embeddings for each record
     PREFIX = "doc"  # prefix for the document keys
 
-    records_df = pd.DataFrame(records)
+    records_dict = [record.dict() for record in records]
+    records_df = pd.DataFrame(records_dict)
     for record in records_df.iterrows():
         question = record["question"]
         answer = record["answer"]
