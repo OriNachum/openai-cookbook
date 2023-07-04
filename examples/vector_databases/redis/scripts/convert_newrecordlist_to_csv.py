@@ -17,9 +17,8 @@ class NewRecord:
 
 def convert_newrecordlist_to_csv(records: List[NewRecord], filename: str):
     file_exists = os.path.isfile(filename)
-    mode = 'a+' if file_exists else 'w'
 
-    with open(filename, mode=mode, newline='') as file:
+    with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["id","question", "company_name", "company_size", "company_country", "company_industry"])  # Write the header
         for record in records:
