@@ -44,7 +44,7 @@ def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     add_embeddings_to_csv(tempfilePath)
     # Generate embeddings for each record
     PREFIX = "doc"  # prefix for the document keys
-    data = nbutils.read_wikipedia_data("/home/ec2-user/git/openai-cookbook/","temp.csv")
+    data = nbutils.read_wikipedia_data("/home/ec2-user/git/openai-cookbook/","temp")
 
     # records_dict = [record.__dict__ for record in records]
     # records_df = pd.DataFrame(records_dict)
