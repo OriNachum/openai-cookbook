@@ -1,31 +1,59 @@
-from datetime import date
 import redis
-from fastapi import FastAPI
-from scripts.search_redis import search_redis
+from datetime import date
+from fastapi import FastAPI, HTTPException
+from typing import Optional, List
 from pydantic import BaseModel
-from typing import List
-
-class Item(BaseModel):
-    question: str
-    answer: str
-    date: date
-    quality: int
-    qualityreason: str
+from scripts.search_redis import search_redis
 
 app = FastAPI()
 
-@app.post("/search")
-async def insert(items: List[Item]):
-    return "Not implemented yet"
+# Define Pydantic models
+class NewRecord(BaseModel):
+    question: str
+    answer: str
+    date: date
+    company_name: str
+    company_size: str
+    company_location: str
+    company_industry: str
 
-@app.put("/search")
-async def update(query: str):
-    return "Not implemented yet"
+class UpdateRecord(BaseModel):
+    question: str
+    vote: int
+    vote_reason: Optional[str] = None
 
-@app.delete("/search")
-async def delete(query: str):
-    return "Not implemented yet"
+class DeleteRecord(BaseModel):
+    question: str
+    delete_reason: str
+    delete_owner: str
 
+# In-memory storage for simplicity. Replace with actual database in production.
+records = []
+
+@app.post("/search/")
+async def create_record(record: List[NewRecord]):
+    # Here, you should implement logic to add a new record to your database
+    records.append(record.dict())
+    return {"detail": "Record created"}
+
+@app.put("/search/")
+async def update_record(record: UpdateRecord):
+    # Here, you should implement logic to update an existing record in your database
+    for r in records:
+        if r['question'] == record.question:
+            r['vote'] = record.vote
+            r['vote_reason'] = record.vote_reason
+            return {"detail": "Record updated"}
+    raise HTTPException(status_code=404, detail="Record not found")
+
+@app.delete("/search/")
+async def delete_record(record: DeleteRecord):
+    # Here, you should implement logic to delete a record from your database
+    for r in records:
+        if r['question'] == record.question:
+            records.remove(r)
+            return {"detail": "Record deleted"}
+    raise HTTPException(status_code=404, detail="Record not found")
 
 @app.get("/search/{query}")
 async def search(query: str):
