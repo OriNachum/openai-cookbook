@@ -39,12 +39,12 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
 
 
 def add_records(redis_client: redis.Redis, records: List[NewRecord]):
-    tempfilePath="/temp/temp.csv"
+    tempfilePath="/home/ec2-user/git/openai-cookbook/temp.csv"
     convert_newrecordlist_to_csv(records, tempfilePath)
     add_embeddings_to_csv(tempfilePath)
     # Generate embeddings for each record
     PREFIX = "doc"  # prefix for the document keys
-    data = nbutils.read_wikipedia_data("/temp/","temp.csv")
+    data = nbutils.read_wikipedia_data("/home/ec2-user/git/openai-cookbook/","temp.csv")
 
     # records_dict = [record.__dict__ for record in records]
     # records_df = pd.DataFrame(records_dict)
