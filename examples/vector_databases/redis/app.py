@@ -25,10 +25,10 @@ class NewRecord(BaseModel):
     question: str
 #    answer: str
 #    date: date
-    companyName: str
-    companySize: str
-    companyCountry: str
-    companyIndustry: str
+    companyName: Optional[str]
+    companySize: Optional[str]
+    companyCountry: Optional[str]
+    companyIndustry: Optional[str]
 
 class UpdateRecord(BaseModel):
     question: str
