@@ -8,7 +8,7 @@ import nbutils
 from scripts.do_validate_key import do_validate_key
 from scripts.connect_to_redis import get_redis_client
 from scripts.create_redis_search_index import create_redis_search_index
-from scripts.load_documents_into_the_index import index_documents
+from examples.vector_databases.redis.scripts.index_documents import index_documents
 
 VALIDATE_KEY_RESULT = do_validate_key(openai)
 print(VALIDATE_KEY_RESULT)
