@@ -3,6 +3,8 @@ import os
 from typing import List
 from datetime import date
 
+from scripts.generate_unique_public_id import generate_unique_public_id
+
 class NewRecord:
     def __init__(self, question: str, answer: str, date: date, company_name: str, company_size: str, company_location: str, company_industry: str):
         self.question = question
@@ -20,7 +22,6 @@ def convert_newrecordlist_to_csv(records: List[NewRecord], filename: str):
     with open(filename, mode=mode, newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["id","question", "answer", "date", "company_name", "company_size", "company_location", "company_industry"])  # Write the header
-        id = 0 
         for record in records:
+            id=generate_unique_public_id()
             writer.writerow([id, record.question, record.answer, record.date, record.company_name, record.company_size, record.company_location, record.company_industry])
-            id += 1

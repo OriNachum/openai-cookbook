@@ -7,3 +7,4 @@ uvicorn
 pydantic
 datetime
 python-dotenv
+uuid
