@@ -40,7 +40,6 @@ def read_wikipedia_data(data_path: str = './', file_name: str = "dataEmbedded") 
     data = pd.read_csv(csv_file_path)
     # Read vectors from strings back into a list
     data['question_vector'] = data.question_vector.apply(literal_eval)
-    data['answer_vector'] = data.answer_vector.apply(literal_eval)
     # Set vector_id to be a string
     data['vector_id'] = data['vector_id'].apply(str)
     return data
