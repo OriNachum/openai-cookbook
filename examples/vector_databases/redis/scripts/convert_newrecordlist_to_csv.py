@@ -13,7 +13,7 @@ class NewRecord:
         self.company_industry = company_industry
 
 def convert_newrecordlist_to_csv(records: List[NewRecord], filename: str):
-    with open(filename, mode='w', newline='') as file:
+    with open(filename, mode='x', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["question", "answer", "date", "company_name", "company_size", "company_location", "company_industry"])  # Write the header
 
