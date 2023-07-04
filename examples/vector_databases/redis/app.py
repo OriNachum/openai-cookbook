@@ -3,16 +3,20 @@ from datetime import date
 from fastapi import FastAPI, HTTPException
 from typing import Optional, List
 from pydantic import BaseModel
+from scripts.do_validate_key import do_validate_key
 from scripts.delete_record import delete_record
 from scripts.update_record import update_record
 from scripts.add_records import add_records
 from scripts.search_redis import search_redis
+import openai 
 
 from dotenv import dotenv_values
 
 # Load environment variables from .env file
 env_vars = dotenv_values('.env')
 
+VALIDATE_KEY_RESULT = do_validate_key(openai)
+print(VALIDATE_KEY_RESULT)
 
 app = FastAPI()
 
