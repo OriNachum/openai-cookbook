@@ -39,8 +39,10 @@ def add_records(redis_client: redis.Redis, records: List[NewRecord]):
 
     records_df = pd.DataFrame(records)
     for record in records_df:
-        question_vector = create_embedding(record["question"])
-        answer_vector = create_embedding(record["answer"])
+        question = record["question"]
+        answer = record["answer"]
+        question_vector = create_embedding(question)
+        answer_vector = create_embedding(answer)
 
         record["question_vector"] = question_vector
         record["answer_vector"] = answer_vector
