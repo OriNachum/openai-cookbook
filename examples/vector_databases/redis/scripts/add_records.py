@@ -15,9 +15,7 @@ import scripts.nbutils as nbutils
 # Define Pydantic models
 class NewRecord(BaseModel):
     question: str
-    answer: str
     question_vector: str
-    answer_vector: str
     vector_id: int
     date: date
     companyName: str
@@ -45,18 +43,5 @@ def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     # Generate embeddings for each record
     PREFIX = "doc"  # prefix for the document keys
     data = nbutils.read_wikipedia_data("/home/ec2-user/git/openai-cookbook/","temp")
-
-    # records_dict = [record.__dict__ for record in records]
-    # records_df = pd.DataFrame(records_dict)
-    # for record in records_df.iterrows():
-    #     question = record["question"]
-    #     answer = record["answer"]
-    #     question_vector = create_embedding(question)
-    #     answer_vector = create_embedding(answer)
-
-    #     record["question_vector"] = question_vector
-    #     record["answer_vector"] = answer_vector
-    #     record["vector_id"] = get_next_vector_id(redis_client)
-
 
     index_documents(redis_client, PREFIX, data)

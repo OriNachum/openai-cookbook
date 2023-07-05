@@ -39,10 +39,10 @@ def search_redis(
 
     # perform vector search
     results = redis_client.ft(index_name).search(query, params_dict)
-    if print_results:
-        for i, article in enumerate(results.docs):
-            score = 1 - float(article.vector_score)
-            print(f"{i}. {article.question} (Score: {round(score ,3) })")
+    # if print_results:
+    #     for i, article in enumerate(results.docs):
+    #         score = 1 - float(article.vector_score)
+    #         print(f"{i}. {article.question} (Score: {round(score ,3) })")
     return results.docs
 
 # Vector search 

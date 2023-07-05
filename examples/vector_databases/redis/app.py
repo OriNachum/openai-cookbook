@@ -31,12 +31,12 @@ class NewRecord(BaseModel):
     companyIndustry: Optional[str]
 
 class UpdateRecord(BaseModel):
-    question: str
+    questionId: str
     vote: int
     vote_reason: Optional[str] = None
 
 class DeleteRecord(BaseModel):
-    question: str
+    questionId: str
     delete_reason: str
     delete_owner: str
 
@@ -73,7 +73,7 @@ async def update_record_endpoint(record: UpdateRecord):
     redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
 
     # Here, you should implement logic to update an existing record in your database
-    update_record(redis_client, record.question, record.vote, record.vote_reason)
+    update_record(redis_client, record.questionId, record.vote, record.vote_reason)
     return {"detail": "Record updated"}
 
 @app.delete("/embedded/remove-model")
@@ -85,7 +85,7 @@ async def delete_record_endpoint(record: DeleteRecord):
     redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
 
     # Here, you should implement logic to delete a record from your database
-    delete_record(redis_client, record.question, record.delete_reason, record.delete_owner)
+    delete_record(redis_client, record.questionId, record.delete_reason, record.delete_owner)
     return {"detail": "Record deleted"}
 
 @app.get("/questions/{question}")
