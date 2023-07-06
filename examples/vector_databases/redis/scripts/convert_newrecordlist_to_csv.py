@@ -10,7 +10,7 @@ class NewRecord:
                  conversation_date: date):
         self.question = question
         self.answer = answer
-        self.isWin = isWin
+        self.isWin = int(isWin)
         self.companyName = company_name
         self.companySize = company_size
         self.companyCountry = company_location
