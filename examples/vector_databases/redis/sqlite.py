@@ -1,29 +1,27 @@
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-import sqlite3
-import json
-
-# start with: uvicorn main:app --reload --port 8003
+from fastapi import FastAPI, HTTPException
+import pyodbc
 
 app = FastAPI()
 
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+# establish the connection
+def get_db_connection():
+    conn_str = (
+        r'DRIVER={ODBC Driver 17 for SQL Server};'
+        r'SERVER=your_server;'
+        r'DATABASE=your_database;'
+        r'UID=your_username;'
+        r'PWD=your_password;'
+    )
+    conn = pyodbc.connect(conn_str)
+    return conn
 
-@app.post("/run_query/")
-async def run_query(query: str):
+@app.get("/execute")
+async def execute_sql(command: str):
     try:
-        con = sqlite3.connect("mydatabase.db")
-        con.row_factory = dict_factory
-        cur = con.cursor()
-        cur.execute(query)
-        rows = cur.fetchall()
-        return JSONResponse(content=json.dumps(rows))
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(command)
+            result = cursor.fetchall()
+            return {"result": result}
     except Exception as e:
-        return JSONResponse(status_code=400, content={"error": str(e)})
-    finally:
-        if con:
-            con.close()
+        raise HTTPException(status_code=400, detail=str(e))
