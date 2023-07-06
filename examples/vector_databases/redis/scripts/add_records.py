@@ -42,6 +42,8 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
 
 def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     tempfilePath="/home/ec2-user/git/openai-cookbook/temp.csv"
+    with open(tempfilePath, 'w') as file:
+        pass
     convert_newrecordlist_to_csv(records, tempfilePath)
     add_embeddings_to_csv(tempfilePath)
     # Generate embeddings for each record
