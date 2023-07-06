@@ -15,10 +15,10 @@ import scripts.nbutils as nbutils
 # Define Pydantic models
 class NewRecord(BaseModel):
     question: str
-    question_vector: str
+    #question_vector: str
     answer: str
-    answer_vector: str
-    vector_id: int
+    #answer_vector: str
+    #vector_id: int
     isWin: bool
     companyName: str
     companySize: str
