@@ -7,26 +7,26 @@ def add_embeddings_to_csv(file_path: str):
     df = pd.read_csv(file_path)
 
     question_vectors = []
-    model_vectors = []
+    answer_vectors = []
 
     vector_ids = []
 
     id_counter=1
     for _, row in df.iterrows():
         question = row['question']
-        model = row['model']
+        answer = row['answer']
 
         question_vector = create_embedding(question)
-        model_vector = create_embedding(model)
+        answer_vector = create_embedding(answer)
 
         question_vectors.append(question_vector)
-        model_vectors.append(model_vector)
+        model_vectors.append(answer_vector)
         vector_ids.append(id_counter)
 
         id_counter += 1
 
     df['question_vector'] = question_vectors
-    df['model_vector'] = model_vectors
+    df['answer_vector'] = answer_vectors
     df['vector_id'] = vector_ids
 
     df.to_csv(file_path, index=False, quoting=csv.QUOTE_ALL)
