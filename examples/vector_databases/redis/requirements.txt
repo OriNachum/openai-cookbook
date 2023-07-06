@@ -8,4 +8,4 @@ pydantic
 datetime
 python-dotenv
 uuid
-sqlite3
+pyodbc
