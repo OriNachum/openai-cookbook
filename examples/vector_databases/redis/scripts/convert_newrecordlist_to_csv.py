@@ -10,7 +10,7 @@ class NewRecord:
                  conversation_date: date):
         self.question = question
         self.answer = answer
-        self.isWin = int(isWin)
+        self.isWin = isWin
         self.companyName = company_name
         self.companySize = company_size
         self.companyCountry = company_location
@@ -25,4 +25,4 @@ def convert_newrecordlist_to_csv(records: List[NewRecord], filename: str):
         writer.writerow(["id","question", "answer", "isWin", "company_name", "company_size", "company_country", "company_industry", "conversation_date"])  # Write the header
         for record in records:
             id=generate_unique_public_id()
-            writer.writerow([id, record.question, record.answer, record.isWin, record.companyName, record.companySize, record.companyCountry, record.companyIndustry, record.conversationDate])
+            writer.writerow([id, record.question, record.answer, int(record.isWin), record.companyName, record.companySize, record.companyCountry, record.companyIndustry, record.conversationDate])
