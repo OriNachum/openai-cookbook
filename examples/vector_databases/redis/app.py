@@ -1,6 +1,7 @@
 import redis
 from datetime import date
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List
 from pydantic import BaseModel
 from scripts.do_validate_key import do_validate_key
@@ -19,6 +20,20 @@ VALIDATE_KEY_RESULT = do_validate_key(openai)
 print(VALIDATE_KEY_RESULT)
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",    # React
+    "http://localhost:8000",    # Vue.js
+    "http://localhost:8080",    # Angular
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Define Pydantic models
 class NewRecord(BaseModel):
