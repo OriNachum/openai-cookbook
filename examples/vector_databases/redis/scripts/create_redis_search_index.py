@@ -19,11 +19,12 @@ def create_redis_search_index(data, redis_client):
 
     # Define RediSearch fields for each of the columns in the dataset
     question = TextField(name="question")
+    answer = TextField(name="answer")
+    isWin = TextField(name="isWin")
     name = TextField(name="company_name") 
     size = TextField(name="company_size") 
     country = TextField(name="company_country") 
     industry = TextField(name="company_industry") 
-    model = TextField(name="model")
     question_embedding = VectorField("question_vector",
         "FLAT", {
             "TYPE": "FLOAT32",
@@ -40,7 +41,7 @@ def create_redis_search_index(data, redis_client):
             "INITIAL_CAP": VECTOR_NUMBER,
         }
     )
-    fields = [question, name, size, country, industry, model, question_embedding, answer_embedding]
+    fields = [question, answer, isWin, name, size, country, industry, question_embedding, answer_embedding]
 
     # Check if index exists
     try:
