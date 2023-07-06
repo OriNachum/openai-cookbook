@@ -20,7 +20,7 @@ def add_embeddings_to_csv(file_path: str):
         answer_vector = create_embedding(answer)
 
         question_vectors.append(question_vector)
-        model_vectors.append(answer_vector)
+        answer_vectors.append(answer_vector)
         vector_ids.append(id_counter)
 
         id_counter += 1
