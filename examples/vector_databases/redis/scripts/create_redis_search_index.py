@@ -18,10 +18,13 @@ def create_redis_search_index(data, redis_client):
     DISTANCE_METRIC = "COSINE"                # distance metric for the vectors (ex. COSINE, IP, L2)
 
     # Define RediSearch fields for each of the columns in the dataset
-    title = TextField(name="title")
-    url = TextField(name="url")
-    text = TextField(name="text")
-    title_embedding = VectorField("question_vector",
+    question = TextField(name="question")
+    name = TextField(name="company_name") 
+    size = TextField(name="company_size") 
+    country = TextField(name="company_country") 
+    industry = TextField(name="company_industry") 
+    model = TextField(name="model")
+    question_embedding = VectorField("question_vector",
         "FLAT", {
             "TYPE": "FLOAT32",
             "DIM": VECTOR_DIM,
@@ -29,7 +32,15 @@ def create_redis_search_index(data, redis_client):
             "INITIAL_CAP": VECTOR_NUMBER,
         }
     )
-    fields = [title, url, text, title_embedding]
+    model_embedding = VectorField("model_vector",
+        "FLAT", {
+            "TYPE": "FLOAT32",
+            "DIM": VECTOR_DIM,
+            "DISTANCE_METRIC": DISTANCE_METRIC,
+            "INITIAL_CAP": VECTOR_NUMBER,
+        }
+    )
+    fields = [question, name, size, country, industry, model, question_embedding, model_embedding]
 
     # Check if index exists
     try:

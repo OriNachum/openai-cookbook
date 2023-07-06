@@ -9,9 +9,11 @@ def index_documents(client: redis.Redis, prefix: str, documents: pd.DataFrame):
 
         # create byte vectors for title and content
         question_embedding = np.array(doc["question_vector"], dtype=np.float32).tobytes()
+        model_embedding = np.array(doc["model_vector"], dtype=np.float32).tobytes()
 
         # replace list of floats with byte vectors
         doc["question_vector"] = question_embedding
+        doc["model_vector"] = model_embedding
 
         client.hset(key, mapping = doc)
 

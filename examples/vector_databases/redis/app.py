@@ -27,8 +27,10 @@ class NewRecord(BaseModel):
 #    date: date
     companyName: Optional[str]
     companySize: Optional[str]
-    companyCountry: Optional[str]
     companyIndustry: Optional[str]
+    companyCountry: Optional[str]
+    conversationDate: date
+    model: str
 
 class UpdateRecord(BaseModel):
     questionId: str
