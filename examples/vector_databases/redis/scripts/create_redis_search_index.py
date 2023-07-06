@@ -32,7 +32,7 @@ def create_redis_search_index(data, redis_client):
             "INITIAL_CAP": VECTOR_NUMBER,
         }
     )
-    model_embedding = VectorField("model_vector",
+    answer_embedding = VectorField("answer_vector",
         "FLAT", {
             "TYPE": "FLOAT32",
             "DIM": VECTOR_DIM,
@@ -40,7 +40,7 @@ def create_redis_search_index(data, redis_client):
             "INITIAL_CAP": VECTOR_NUMBER,
         }
     )
-    fields = [question, name, size, country, industry, model, question_embedding, model_embedding]
+    fields = [question, name, size, country, industry, model, question_embedding, answer_embedding]
 
     # Check if index exists
     try:

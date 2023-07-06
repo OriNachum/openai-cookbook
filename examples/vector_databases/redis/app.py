@@ -23,14 +23,13 @@ app = FastAPI()
 # Define Pydantic models
 class NewRecord(BaseModel):
     question: str
-#    answer: str
-#    date: date
+    answer: str
+    isWin: bool
     companyName: Optional[str]
     companySize: Optional[str]
     companyIndustry: Optional[str]
     companyCountry: Optional[str]
     conversationDate: date
-    model: str
 
 class UpdateRecord(BaseModel):
     questionId: str
@@ -51,7 +50,7 @@ async def create_records_endpoint(records: List[NewRecord]):
     return {"detail": "Records created"}
 
 @app.post("/embedded/index-model")
-async def create_records_endpoint(record: NewRecord):
+async def create_record_endpoint(record: NewRecord):
     records=[record]
     await create_records_internal(records)
     return {"detail": "Record created"}

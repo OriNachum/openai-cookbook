@@ -16,12 +16,16 @@ import scripts.nbutils as nbutils
 class NewRecord(BaseModel):
     question: str
     question_vector: str
+    answer: str
+    answer_vector: str
     vector_id: int
-    date: date
+    isWin: bool
     companyName: str
     companySize: str
     companyCountry: str
     companyIndustry: str
+    conversationDate: date
+
 
 
 def get_next_vector_id(redis_client: redis.Redis) -> int:
