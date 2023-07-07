@@ -9,7 +9,7 @@ from scripts.delete_record import delete_record
 from scripts.update_record import update_record
 from scripts.add_records import add_records
 from scripts.search_redis import search_redis
-from scripts.gpt_service import QueryParams, complete_prompt
+from scripts.complete_prompt import QueryParams, complete_prompt
 
 import openai 
 
