@@ -9,7 +9,7 @@ from scripts.delete_record import delete_record
 from scripts.update_record import update_record
 from scripts.add_records import add_records
 from scripts.search_redis import search_redis
-from scripts.complete_prompt import QueryParams, complete_prompt
+from scripts.complete_prompt import  complete_prompt
 
 import openai 
 
@@ -118,6 +118,7 @@ async def search(question: str):
     return results
 
 @app.get("/ask/{query}")
-async def ask(query: str, params: QueryParams):
-    response = complete_prompt(query, params)
+async def ask(query: str, system_prompt: str = None, gpt_model: str = None, temperature: float = 0.3):
+    response = complete_prompt(query, system_prompt, gpt_model, temperature)
     return {"response": response}
+
