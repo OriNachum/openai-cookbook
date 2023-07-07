@@ -9,6 +9,8 @@ from scripts.delete_record import delete_record
 from scripts.update_record import update_record
 from scripts.add_records import add_records
 from scripts.search_redis import search_redis
+from scripts.gpt_service import QueryParams, complete_prompt
+
 import openai 
 
 from dotenv import dotenv_values
@@ -114,3 +116,8 @@ async def search(question: str):
 
     results = search_redis(redis_client, question, vector_field='question_vector', k=3)  # call your search method
     return results
+
+@app.get("/ask/{query}")
+async def ask(query: str, params: QueryParams):
+    response = complete_prompt(query, params)
+    return {"response": response}
