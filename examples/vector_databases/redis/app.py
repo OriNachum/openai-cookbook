@@ -40,13 +40,13 @@ app.add_middleware(
 # Define Pydantic models
 class NewRecord(BaseModel):
     question: str
-    answer: str
-    isWin: bool
+    answer: Optional[str]
+    isWin: Optional[bool]
     companyName: Optional[str]
     companySize: Optional[str]
     companyIndustry: Optional[str]
     companyCountry: Optional[str]
-    conversationDate: date
+    conversationDate: Optional[date]
 
 class UpdateRecord(BaseModel):
     questionId: str
