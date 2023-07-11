@@ -5,13 +5,18 @@ def update_record(redis_client: redis.Redis, questionId: str, vote: int, vote_re
     questionId_bytes = questionId.encode('utf-8')
     id = redis_client.hget(questionId_bytes, b"id")
     if id is not None:
-        old_vote = redis_client.hget(questionId_bytes, b"vote") or 0
-        old_vote_reason = redis_client.hget(questionId_bytes, b"vote_reason") or ""
+        old_upvotes = redis_client.hget(questionId_bytes, b"upvotes") or 0
+        old_downvotes = redis_client.hget(questionId_bytes, b"downvotes") or 0
 
-        new_vote = old_vote + vote
-        new_vote_reason = old_vote_reason + "; " + vote_reason
+        new_upvotes = old_upvotes
+        new_downvotes = old_downvotes
+        if (vote < 0):
+            new_downvotes = new_downvotes + 1
+        if (vote > 0):
+            new_downvotes = new_downvotes + 1
         
-        redis_client.hset(questionId_bytes, b"vote", new_vote)
-        redis_client.hset(questionId_bytes, b"vote_reason", new_vote_reason)
+        redis_client.hset(questionId_bytes, b"upvotes", new_upvotes)
+        redis_client.hset(questionId_bytes, b"downvotes", new_downvotes)
+
     else:
         raise Exception("Record not found")
