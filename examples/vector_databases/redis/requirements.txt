@@ -9,3 +9,6 @@ datetime
 python-dotenv
 uuid
 pyodbc
+threading
+queue
+asyncio
