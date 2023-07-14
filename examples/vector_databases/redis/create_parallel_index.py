@@ -31,16 +31,16 @@ INDEX_NAME = "embeddings-index"
 old_index = get_redis_client()
 new_index = get_redis_client()
 
-# Define the schema for the new index
-new_index.ft(INDEX_NAME).create_index((
-    TextField('question'),
-    NumericField('answer'),
-    VectorField('embedding', 'FLAT', {
-        'TYPE': 'FLOAT32',
-        'DIM': 1024,  # length of the embedding vector
-        'DISTANCE_METRIC': 'COSINE',  # distance metric for the vectors
-    }),
-))
+# # Define the schema for the new index
+# new_index.ft(INDEX_NAME).create_index((
+#     TextField('question'),
+#     NumericField('answer'),
+#     VectorField('embedding', 'FLAT', {
+#         'TYPE': 'FLOAT32',
+#         'DIM': 1024,  # length of the embedding vector
+#         'DISTANCE_METRIC': 'COSINE',  # distance metric for the vectors
+#     }),
+# ))
 
 # Load the last processed key
 last_key = load_last_key()
