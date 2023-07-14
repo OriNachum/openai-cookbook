@@ -70,7 +70,7 @@ def update_record(redis_client: redis.Redis, questionId: str):
 print("Created new index.")
 
 # Use a cursor to iterate over the keys in the Redis database
-for key in redis_client.scan_iter('id:*'):
+for key in redis_client.scan_iter('doc:*'):
     # If a last key is loaded, skip keys until we reach the last key
     # if last_key is not None and key != last_key:
     #     continue
