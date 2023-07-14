@@ -42,14 +42,14 @@ last_key = load_last_key()
 
 
 def update_record(redis_client: redis.Redis, questionId: str):
-    print('fs{key}: {e}')
+    print('f{key}: {e}')
 
     questionId_bytes = questionId #questionId.encode('utf-8')
     id = redis_client.hget(questionId, b"id")
     if id is not None:        
         # Get the question and answer fields
-        question = redis_client.hget(questionId_bytes, b"question")
-        answer = redis_client.hget(questionId_bytes, b"answer")
+        question = redis_client.hget(questionId_bytes, b"question").decode('utf-8')
+        answer = redis_client.hget(questionId_bytes, b"answer").decode('utf-8')
 
         # Concatenate the question and answer fields
         combined_text = f"Q: {question} Answer: {answer}"
