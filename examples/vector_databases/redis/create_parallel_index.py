@@ -70,6 +70,9 @@ for key in r.scan_iter('question_vector:*'):
 
     # Save the last processed key
     save_last_key(key)
-    print(f"Added document {doc.docid} to new index.")
+        print(f"Added document {doc.docid} to new index.")
+except Exception as e:
+        print(f"Error processing document {doc.docid}: {e}")
+
 
 
