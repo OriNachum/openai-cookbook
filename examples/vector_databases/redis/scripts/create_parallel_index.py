@@ -14,8 +14,8 @@ redis_client.ping()
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 # Create a new RediSearch client for the old and new indexes
-old_index = redis_client('old_index', conn=r)
-new_index = redis_client('new_index', conn=r)
+old_index = redis_client('question_vector', conn=r)
+new_index = redis_client('system_index', conn=r)
 
 # Define the schema for the new index
 new_index.create_index((
@@ -29,7 +29,7 @@ new_index.create_index((
 ))
 
 # Use a cursor to iterate over the keys in the Redis database
-for key in r.scan_iter('old_index:*'):
+for key in r.scan_iter('question_vector:*'):
     # Get the document from the old index
     doc = old_index.get_document(key)
 
