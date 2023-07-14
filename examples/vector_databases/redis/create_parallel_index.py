@@ -26,8 +26,8 @@ redis_client.ping()
 r = redis.Redis(host='localhost', port=6379, db=0)
 
 # Create a new RediSearch client for the old and new indexes
-old_index = redis_client('question_vector', conn=r)
-new_index = redis_client('system_index', conn=r)
+old_index = get_redis_client()
+new_index = get_redis_client()
 
 # Define the schema for the new index
 new_index.create_index((
