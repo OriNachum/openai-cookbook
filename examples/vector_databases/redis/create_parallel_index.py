@@ -44,8 +44,8 @@ last_key = load_last_key()
 def update_record(redis_client: redis.Redis, questionId: str):
     print('fs{key}: {e}')
 
-    questionId_bytes = questionId.encode('utf-8')
-    id = redis_client.hget(questionId_bytes, b"id")
+    questionId_bytes = questionId #questionId.encode('utf-8')
+    id = redis_client.hget(questionId, b"id")
     if id is not None:        
         # Get the question and answer fields
         question = redis_client.hget(questionId_bytes, b"question")
