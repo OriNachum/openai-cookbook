@@ -45,6 +45,8 @@ new_index = get_redis_client()
 # Load the last processed key
 last_key = load_last_key()
 
+print("Created new index.")
+
 # Use a cursor to iterate over the keys in the Redis database
 for key in r.scan_iter('question_vector:*'):
     # If a last key is loaded, skip keys until we reach the last key
@@ -68,3 +70,6 @@ for key in r.scan_iter('question_vector:*'):
 
     # Save the last processed key
     save_last_key(key)
+    print(f"Added document {doc.docid} to new index.")
+
+
