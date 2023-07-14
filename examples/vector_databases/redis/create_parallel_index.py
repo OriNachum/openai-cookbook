@@ -1,4 +1,5 @@
 import numpy as np
+import base64
 import redis
 from redis.commands.search.field import (
     TextField,
@@ -59,9 +60,10 @@ def update_record(redis_client: redis.Redis, questionId: str):
 
         # Convert the embedding to bytes
         embedding_bytes = np.array(embedding, dtype=np.float32).tobytes()
+        embedding_str = base64.b64encode(embedding_bytes).decode('utf-8')
 
         # Add the embedding to the document
-        redis_client.hset(questionId_bytes, b"embedding2", embedding_bytes)
+        redis_client.hset(questionId_bytes, b"embedding2", embedding_str)
 
     else:
         print(f"Error processing document {key}: {e}")
