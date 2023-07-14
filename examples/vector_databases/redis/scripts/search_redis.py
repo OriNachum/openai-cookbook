@@ -5,6 +5,8 @@ import numpy as np
 from typing import List
 from redis.commands.search.query import Query
 
+from scripts.create_embedding import create_embedding
+
 
 # For using OpenAI to generate query embedding
 # results = search_redis(redis_client, 'modern art in Europe', k=10)
@@ -14,7 +16,7 @@ def search_redis(
     redis_client: redis.Redis,
     user_query: str,
     index_name: str = "embeddings-index",
-    vector_field: str = "question_vector",
+    vector_field: str = "system_index",
     return_fields: list = ["question", "answer", "date", "quality","qualityreason", "vector_score"],
     hybrid_fields = "*",
     k: int = 20,
@@ -22,9 +24,7 @@ def search_redis(
 ) -> List[dict]:
 
     # Creates embedding vector from user query
-    embedded_query = openai.Embedding.create(input=user_query,
-                                            model="text-embedding-ada-002",
-                                            )["data"][0]['embedding']
+    embedded_query = create_embedding(user_query)
 
     # Prepare the Query
     base_query = f'{hybrid_fields}=>[KNN {k} @{vector_field} $vector AS vector_score]'
