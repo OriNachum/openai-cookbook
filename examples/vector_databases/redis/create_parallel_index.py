@@ -42,7 +42,7 @@ last_key = load_last_key()
 
 
 def update_record(redis_client: redis.Redis, questionId: str):
-    print(fs{key}: {e}")
+    print('fs{key}: {e}')
 
     questionId_bytes = questionId.encode('utf-8')
     id = redis_client.hget(questionId_bytes, b"id")
