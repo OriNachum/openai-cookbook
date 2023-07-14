@@ -1,3 +1,4 @@
+import numpy as np
 import redis
 from redis.commands.search.field import (
     TextField,
@@ -23,13 +24,7 @@ redis_client = get_redis_client()
 redis_client.ping()
 
 # Connect to the Redis database
-r = redis.Redis(host='localhost', port=6379, db=0)
-
 INDEX_NAME = "embeddings-index"
-
-# Create a new RediSearch client for the old and new indexes
-old_index = get_redis_client()
-new_index = get_redis_client()
 
 # # Define the schema for the new index
 # new_index.ft(INDEX_NAME).create_index((
@@ -45,34 +40,48 @@ new_index = get_redis_client()
 # Load the last processed key
 last_key = load_last_key()
 
+
+def update_record(redis_client: redis.Redis, questionId: str):
+    questionId_bytes = questionId.encode('utf-8')
+    id = redis_client.hget(questionId_bytes, b"id")
+    if id is not None:        
+        # Get the question and answer fields
+        question = redis_client.hget(questionId_bytes, b"question")
+        answer = redis_client.hget(questionId_bytes, b"answer")
+
+        # Concatenate the question and answer fields
+        combined_text = f"Q: {question} Answer: {answer}"
+
+        # Create an embedding vector for the combined text
+        embedding = create_embedding(combined_text)
+
+        # Convert the embedding to bytes
+        embedding_bytes = np.array(embedding, dtype=np.float32).tobytes()
+
+        # Add the embedding to the document
+        redis_client.hset(questionId_bytes, b"embedding2", embedding_bytes)
+
+    else:
+        raise Exception("Record nclientot found")
+
+
 print("Created new index.")
 
 # Use a cursor to iterate over the keys in the Redis database
-for key in r.scan_iter('question_vector:*'):
+for key in r.scan_iter('id:*'):
     # If a last key is loaded, skip keys until we reach the last key
     if last_key is not None and key != last_key:
         continue
     elif last_key is not None and key == last_key:
         last_key = None
         continue
-
-    # Get the document from the old index
-    doc = old_index.get_document(key)
-
-    # Concatenate the question and answer fields
-    combined_text = f"Q: {doc.fields['question']} Answer: {doc.fields['answer']}"
-
-    # Create an embedding vector for the combined text
-    embedding = create_embedding(combined_text)
-
-    # Add the document and its embedding to the new index
-    new_index.add_document(doc.docid, embedding=embedding, **doc.fields)
-
-    # Save the last processed key
-    save_last_key(key)
-        print(f"Added document {doc.docid} to new index.")
-except Exception as e:
-        print(f"Error processing document {doc.docid}: {e}")
+    try:
+        update_record(redis_client, key)
+        # Save the last processed key
+        save_last_key(key)
+        print(f"Added document {key} to new index.")
+    except Exception as e:
+            print(f"Error processing document {key}: {e}")
 
 
 
