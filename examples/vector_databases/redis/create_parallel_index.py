@@ -14,12 +14,15 @@ def save_last_key(key):
         f.write(key)
 
 # Function to load the last processed key from a file
+# Function to load the last processed key from a file
 def load_last_key():
     try:
         with open('last_key.txt', 'r') as f:
-            return f.read().encode('utf-8')
+            # Use rstrip() to remove trailing newlines
+            return f.read().rstrip('\n').encode('utf-8')
     except FileNotFoundError:
         return None
+
 
 redis_client = get_redis_client()
 redis_client.ping()
