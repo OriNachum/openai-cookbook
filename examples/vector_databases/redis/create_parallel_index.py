@@ -45,7 +45,7 @@ last_key = load_last_key()
 def update_record(redis_client: redis.Redis, questionId: str):
     print('f{key}: {e}')
     try:
-
+        embedding = ''
         questionId_bytes = questionId #questionId.encode('utf-8')
         id = redis_client.hget(questionId, b"id")
         if id is not None:        
