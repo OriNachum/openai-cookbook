@@ -65,7 +65,7 @@ def update_record(redis_client: redis.Redis, questionId: str):
         redis_client.hset(questionId_bytes, b"embedding2", embedding_bytes)
 
     else:
-        print(f"Error processing document {key}: {e}")
+        print(f"Error processing document {key}: {e} : {embedding} : {embedding_bytes}")
 
 
 print("Created new index.")
