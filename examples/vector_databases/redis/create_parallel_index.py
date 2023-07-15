@@ -17,7 +17,7 @@ def save_last_key(key):
 def load_last_key():
     try:
         with open('last_key.txt', 'r') as f:
-            return f.read()
+            return f.read().encode('utf-8')
     except FileNotFoundError:
         return None
 
