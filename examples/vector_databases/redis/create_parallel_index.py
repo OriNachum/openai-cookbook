@@ -60,10 +60,9 @@ def update_record(redis_client: redis.Redis, questionId: str):
 
         # Convert the embedding to bytes
         embedding_bytes = np.array(embedding, dtype=np.float32).tobytes()
-        embedding_str = base64.b64encode(embedding_bytes).decode('utf-8')
 
         # Add the embedding to the document
-        redis_client.hset(questionId_bytes, b"embedding2", embedding_str)
+        redis_client.hset(questionId_bytes, b"embedding2", embedding_bytes)
 
     else:
         print(f"Error processing document {key}: {e}")
