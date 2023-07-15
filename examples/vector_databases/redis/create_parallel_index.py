@@ -55,15 +55,19 @@ def update_record(redis_client: redis.Redis, questionId: str):
 
             # Concatenate the question and answer fields
             combined_text = f"Q: {question} Answer: {answer}"
+            print(combined_text)
 
             # Create an embedding vector for the combined text
             embedding = create_embedding(combined_text)
-
+            print(combined_text)
+            
             # Convert the embedding to bytes
             embedding_bytes = np.array(embedding, dtype=np.float32).tobytes()
+            print(embedding_bytes)
 
             # Add the embedding to the document
             redis_client.hset(questionId_bytes, b"embedding2", embedding_bytes)
+            print(combined_text)
 
         else:
             print(f"Error processing document {key}: {e} : {embedding} : {embedding_bytes}")
