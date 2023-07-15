@@ -75,9 +75,9 @@ def update_record(redis_client: redis.Redis, questionId: str):
             print(combined_text)
 
         else:
-            print(f"Error processing document {key}: {e} : {embedding} : {embedding_bytes}")
+            print(f"Error processing document {key}: {e} : {len(embedding)} : ")
     except Exception as e:
-            print(f"Error processing document {key}: {e} : {embedding} : {embedding_bytes}")
+            print(f"Error processing document {key}: {e} : {len(embedding)} : ")
 
 
 print("Created new index.")
@@ -93,7 +93,7 @@ for key in redis_client.scan_iter('doc:*'):
     try:
         update_record(redis_client, key)
         # Save the last processed key
-        save_last_key(key)
+        #save_last_key(key)
         print(f"Added document {key} to new index.")
     except Exception as e:
             print(f"Error processing document {key}: {e}")
