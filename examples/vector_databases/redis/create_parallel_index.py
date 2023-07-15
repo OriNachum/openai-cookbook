@@ -50,8 +50,13 @@ def update_record(redis_client: redis.Redis, questionId: str):
         id = redis_client.hget(questionId, b"id")
         if id is not None:        
             # Get the question and answer fields
-            question = redis_client.hget(questionId_bytes, b"question").decode('utf-8')
-            answer = redis_client.hget(questionId_bytes, b"answer").decode('utf-8')
+            # Get the question and answer fields
+            question = redis_client.hget(questionId_bytes, b"question")
+            answer = redis_client.hget(questionId_bytes, b"answer")
+    
+            # Decode the question and answer fields, treating them as empty strings if they are None
+            question = question.decode('utf-8') if question else ""
+            answer = answer.decode('utf-8') if answer else ""
 
             # Concatenate the question and answer fields
             combined_text = f"Q: {question} Answer: {answer}"
