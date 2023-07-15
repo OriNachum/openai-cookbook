@@ -11,7 +11,7 @@ from scripts.connect_to_redis import get_redis_client
 # Function to save the last processed key to a file
 def save_last_key(key):
     with open('last_key.txt', 'w') as f:
-        f.write(key)
+        f.write(key.decode('utf-8'))
 
 # Function to load the last processed key from a file
 # Function to load the last processed key from a file
@@ -86,7 +86,9 @@ def update_record(redis_client: redis.Redis, questionId: str):
 print("Created new index.")
 
 # Use a cursor to iterate over the keys in the Redis database
+counter = 0
 for key in redis_client.scan_iter('doc:*'):
+    counter += 1
     # If a last key is loaded, skip keys until we reach the last key
     if last_key is not None:
         print(last_key)
@@ -105,8 +107,8 @@ for key in redis_client.scan_iter('doc:*'):
     try:
         update_record(redis_client, key)
         # Save the last processed key
-        #save_last_key(key)
-        print(f"Added document {key} to new index.")
+        save_last_key(key)
+        print(f"Added document {key} to new index. {counter}")
     except Exception as e:
             print(f"Error processing document {key}: {e}")
 
