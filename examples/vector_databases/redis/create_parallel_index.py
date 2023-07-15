@@ -85,6 +85,15 @@ print("Created new index.")
 # Use a cursor to iterate over the keys in the Redis database
 for key in redis_client.scan_iter('doc:*'):
     # If a last key is loaded, skip keys until we reach the last key
+    if last_key is not None:
+        print(last_key)
+        if key != last_key:
+            print(f"continuing {key}")
+            continue
+        elif key == last_key:
+            print("found it!")
+            last_key = None
+            continue
     if last_key is not None and key != last_key:
         continue
     elif last_key is not None and key == last_key:
