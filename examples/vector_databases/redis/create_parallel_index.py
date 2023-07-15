@@ -44,28 +44,31 @@ last_key = load_last_key()
 
 def update_record(redis_client: redis.Redis, questionId: str):
     print('f{key}: {e}')
+    try:
 
-    questionId_bytes = questionId #questionId.encode('utf-8')
-    id = redis_client.hget(questionId, b"id")
-    if id is not None:        
-        # Get the question and answer fields
-        question = redis_client.hget(questionId_bytes, b"question").decode('utf-8')
-        answer = redis_client.hget(questionId_bytes, b"answer").decode('utf-8')
+        questionId_bytes = questionId #questionId.encode('utf-8')
+        id = redis_client.hget(questionId, b"id")
+        if id is not None:        
+            # Get the question and answer fields
+            question = redis_client.hget(questionId_bytes, b"question").decode('utf-8')
+            answer = redis_client.hget(questionId_bytes, b"answer").decode('utf-8')
 
-        # Concatenate the question and answer fields
-        combined_text = f"Q: {question} Answer: {answer}"
+            # Concatenate the question and answer fields
+            combined_text = f"Q: {question} Answer: {answer}"
 
-        # Create an embedding vector for the combined text
-        embedding = create_embedding(combined_text)
+            # Create an embedding vector for the combined text
+            embedding = create_embedding(combined_text)
 
-        # Convert the embedding to bytes
-        embedding_bytes = np.array(embedding, dtype=np.float32).tobytes()
+            # Convert the embedding to bytes
+            embedding_bytes = np.array(embedding, dtype=np.float32).tobytes()
 
-        # Add the embedding to the document
-        redis_client.hset(questionId_bytes, b"embedding2", embedding_bytes)
+            # Add the embedding to the document
+            redis_client.hset(questionId_bytes, b"embedding2", embedding_bytes)
 
-    else:
-        print(f"Error processing document {key}: {e} : {embedding} : {embedding_bytes}")
+        else:
+            print(f"Error processing document {key}: {e} : {embedding} : {embedding_bytes}")
+    except Exception as e:
+            print(f"Error processing document {key}: {e} : {embedding} : {embedding_bytes}")
 
 
 print("Created new index.")
