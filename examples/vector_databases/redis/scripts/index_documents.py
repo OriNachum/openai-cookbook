@@ -8,10 +8,12 @@ def index_documents(client: redis.Redis, prefix: str, documents: pd.DataFrame):
         key = f"{prefix}:{str(doc['id'])}"
 
         # create byte vectors for title and content
-        gpt_embedding = np.array(doc["gpt_vector"], dtype=np.float32).tobytes()
+        question_embedding = np.array(doc["question_vector"], dtype=np.float32).tobytes()
+        answer_embedding = np.array(doc["answer_vector"], dtype=np.float32).tobytes()
 
         # replace list of floats with byte vectors
-        doc["gpt_vector"] = gpt_embedding
+        doc["question_vector"] = question_embedding
+        doc["answer_vector"] = answer_embedding
 
         client.hset(key, mapping = doc)
 
