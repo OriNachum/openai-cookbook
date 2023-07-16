@@ -28,6 +28,8 @@ def process_item_with_threading(queue, results, vectors, ids, id_counter):
     thread.start()
     return thread  # Return the thread so we can join it later
 
+import concurrent.futures
+
 def add_embeddings_to_csv(file_path: str):
     df = pd.read_csv(file_path)
 
@@ -36,31 +38,24 @@ def add_embeddings_to_csv(file_path: str):
 
     vector_ids = []
 
-    threads = []  # Keep track of all threads
-
     id_counter = 1
-    for _, row in df.iterrows():
-        question = row['question']
-        answer = row['answer']
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        for _, row in df.iterrows():
+            question = row['question']
+            answer = row['answer']
 
-        question_queue = Queue()
-        answer_queue = Queue()
+            question_future = executor.submit(create_embedding, question)
+            answer_future = executor.submit(create_embedding, answer)
 
-        question_queue.put(question)
-        answer_queue.put(answer)
+            # Wait for the futures to complete and get their results
+            question_result = question_future.result()
+            answer_result = answer_future.result()
 
-        question_results = []
-        answer_results = []
+            question_vectors.append(question_result)
+            answer_vectors.append(answer_result)
+            vector_ids.append(id_counter)
 
-        # Start the threads and keep track of them
-        threads.append(process_item_with_threading(question_queue, question_results, question_vectors, vector_ids, id_counter))
-        threads.append(process_item_with_threading(answer_queue, answer_results, answer_vectors, vector_ids, id_counter))
-
-        id_counter += 1
-
-    # Wait for all threads to finish
-    for thread in threads:
-        thread.join()
+            id_counter += 1
 
     df['question_vector'] = question_vectors
     df['answer_vector'] = answer_vectors
