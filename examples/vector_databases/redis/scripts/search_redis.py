@@ -15,7 +15,7 @@ from scripts.create_embedding import create_embedding
 def search_redis(
     redis_client: redis.Redis,
     user_query: str,
-    index_name: str = "embeddings-index",
+    index_name: str = "embeddings-index-gpt",
     vector_field: str = "gpt_index",
     #vector_field: str = "system_index",
     #vector_field: str = "question_vector",
