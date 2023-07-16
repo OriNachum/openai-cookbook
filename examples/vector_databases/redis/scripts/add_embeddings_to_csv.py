@@ -40,21 +40,16 @@ def add_embeddings_to_csv(file_path: str):
         question = row['question']
         answer = row['answer']
 
-        question_queue = Queue()
-        answer_queue = Queue()
+        gpt_queue = Queue()
 
-        question_queue.put(question)
-        answer_queue.put(answer)
+        gpt_queue.put(question)
 
-        question_results = []
-        answer_results = []
+        gpt_results = []
 
         # Start the threads and keep track of them
-        threads.append(process_item_with_threading(question_queue, question_results))
-        threads.append(process_item_with_threading(answer_queue, answer_results))
+        threads.append(process_item_with_threading(gpt_queue, gpt_results))
 
-        question_vectors.append(question_results[0])
-        answer_vectors.append(answer_results[0])
+        question_vectors.append(gpt_results[0])
         vector_ids.append(id_counter)
 
         id_counter += 1
@@ -63,8 +58,7 @@ def add_embeddings_to_csv(file_path: str):
     for thread in threads:
         thread.join()
 
-    df['question_vector'] = question_vectors
-    df['answer_vector'] = answer_vectors
+    df['gpt_vector'] = question_vectors
     df['vector_id'] = vector_ids
 
     df.to_csv(file_path, index=False, quoting=csv.QUOTE_ALL)
