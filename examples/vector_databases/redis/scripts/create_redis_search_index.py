@@ -25,7 +25,7 @@ def create_redis_search_index(data, redis_client):
     size = TextField(name="company_size") 
     country = TextField(name="company_country") 
     industry = TextField(name="company_industry") 
-    question_embedding = VectorField("gpt_vector",
+    gpt_embedding = VectorField("gpt_vector",
         "FLAT", {
             "TYPE": "FLOAT32",
             "DIM": VECTOR_DIM,
