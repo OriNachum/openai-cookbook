@@ -18,7 +18,7 @@ def search_redis(
     index_name: str = "embeddings-index",
     vector_field: str = "system_index",
     #vector_field: str = "question_vector",
-    return_fields: list = ["question", "answer", "date", "quality","qualityreason", "vector_score"],
+    return_fields: list = ["question", "answer", "date", "quality","qualityreason", "vector_score", "upvotes", "downvotes"],
     hybrid_fields = "*",
     k: int = 20,
     print_results: bool = True,
