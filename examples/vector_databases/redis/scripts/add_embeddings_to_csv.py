@@ -12,16 +12,19 @@ from scripts.create_embedding import create_embedding
 # Create a semaphore with a maximum of 10 concurrent threads
 semaphore = threading.Semaphore(10)
 
-def worker(q, results):
+def worker(q, results, vectors, ids, id_counter):
     with semaphore:
         while not q.empty():
             item = q.get()
             vector = create_embedding(item)
             results.append(vector)
+            vectors.append(vector)
+            ids.append(id_counter)
+            id_counter += 1
             q.task_done()
 
-def process_item_with_threading(queue, results):
-    thread = threading.Thread(target=worker, args=(queue, results))
+def process_item_with_threading(queue, results, vectors, ids, id_counter):
+    thread = threading.Thread(target=worker, args=(queue, results, vectors, ids, id_counter))
     thread.start()
     return thread  # Return the thread so we can join it later
 
@@ -50,12 +53,8 @@ def add_embeddings_to_csv(file_path: str):
         answer_results = []
 
         # Start the threads and keep track of them
-        threads.append(process_item_with_threading(question_queue, question_results))
-        threads.append(process_item_with_threading(answer_queue, answer_results))
-
-        question_vectors.append(question_results[0])
-        answer_vectors.append(answer_results[0])
-        vector_ids.append(id_counter)
+        threads.append(process_item_with_threading(question_queue, question_results, question_vectors, vector_ids, id_counter))
+        threads.append(process_item_with_threading(answer_queue, answer_results, answer_vectors, vector_ids, id_counter))
 
         id_counter += 1
 
