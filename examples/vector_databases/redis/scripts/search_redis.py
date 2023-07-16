@@ -44,6 +44,18 @@ def search_redis(
     #     for i, article in enumerate(results.docs):
     #         score = 1 - float(article.vector_score)
     #         print(f"{i}. {article.question} (Score: {round(score ,3) })")
+
+    # calculate the score for each result and store it in the result
+    for result in results.docs:
+        result['score'] = calculate_best_score(result['upvotes'], result['downvotes'])
+
+    # sort the results by the calculated score
+    results.docs.sort(key=lambda x: x['score'], reverse=True)
+
+    # if print_results:
+    #     for i, article in enumerate(results.docs):
+    #         score = 1 - float(article.vector_score)
+    #         print(f"{i}. {article.question} (Score: {round(score ,3) })")
     return results.docs
 
 # Vector search 
