@@ -11,7 +11,7 @@ import sys
 
 def create_redis_search_index(data, redis_client):
     # Constants
-    VECTOR_DIM = len(data['gpt_vector'][0]) # length of the vectors
+    VECTOR_DIM = len(data['question_vector'][0]) # length of the vectors
     VECTOR_NUMBER = len(data)                 # initial number of vectors
     INDEX_NAME = "embeddings-index-gpt"           # name of the search index
     PREFIX = "doc"                            # prefix for the document keys
