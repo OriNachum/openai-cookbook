@@ -9,5 +9,4 @@ datetime
 python-dotenv
 uuid
 pyodbc
-queue
 asyncio
