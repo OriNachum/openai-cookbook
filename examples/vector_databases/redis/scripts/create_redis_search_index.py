@@ -13,7 +13,7 @@ def create_redis_search_index(data, redis_client):
     # Constants
     VECTOR_DIM = len(data['question_vector'][0]) # length of the vectors
     VECTOR_NUMBER = len(data)                 # initial number of vectors
-    INDEX_NAME = "embeddings-index"           # name of the search index
+    INDEX_NAME = "embeddings-index-gpt"           # name of the search index
     PREFIX = "doc"                            # prefix for the document keys
     DISTANCE_METRIC = "COSINE"                # distance metric for the vectors (ex. COSINE, IP, L2)
 
@@ -25,7 +25,7 @@ def create_redis_search_index(data, redis_client):
     size = TextField(name="company_size") 
     country = TextField(name="company_country") 
     industry = TextField(name="company_industry") 
-    question_embedding = VectorField("question_vector",
+    question_embedding = VectorField("gpt_vector",
         "FLAT", {
             "TYPE": "FLOAT32",
             "DIM": VECTOR_DIM,
@@ -33,15 +33,7 @@ def create_redis_search_index(data, redis_client):
             "INITIAL_CAP": VECTOR_NUMBER,
         }
     )
-    answer_embedding = VectorField("answer_vector",
-        "FLAT", {
-            "TYPE": "FLOAT32",
-            "DIM": VECTOR_DIM,
-            "DISTANCE_METRIC": DISTANCE_METRIC,
-            "INITIAL_CAP": VECTOR_NUMBER,
-        }
-    )
-    fields = [question, answer, isWin, name, size, country, industry, question_embedding, answer_embedding]
+    fields = [question, answer, isWin, name, size, country, industry, gpt_embedding]
 
     # Check if index exists
     try:
