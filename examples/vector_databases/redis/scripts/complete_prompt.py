@@ -17,7 +17,7 @@ def complete_prompt(query: str, system_prompt: str, gpt_model: str, temperature:
             {'role': 'system', 'content': system_prompt},
             {'role': 'user', 'content': query},
         ],
-        model=GPT_DEFAULT_MODEL #gpt_model,
+        model=gpt_model,
         temperature=temperature,
     )
     return response['choices'][0]['message']['content']
