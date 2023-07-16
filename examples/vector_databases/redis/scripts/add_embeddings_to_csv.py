@@ -7,7 +7,7 @@ from queue import Queue
 import time
 
 # Assume create_embedding function exists
-# from scripts.create_embedding import create_embedding
+from scripts.create_embedding import create_embedding
 
 # Create a semaphore with a maximum of 10 concurrent threads
 semaphore = threading.Semaphore(10)
