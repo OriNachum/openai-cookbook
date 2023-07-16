@@ -36,7 +36,8 @@ def add_embeddings_to_csv(file_path: str):
 
     id_counter = 1
     for _, row in df.iterrows():
-        question = row['answer'] + ' ' + row['question']
+        question = row['question']
+        answer = row['answer']
 
         gpt_queue = Queue()
 
