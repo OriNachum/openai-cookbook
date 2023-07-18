@@ -6,7 +6,7 @@ from typing import List
 from redis.commands.search.query import Query
 
 from scripts.create_embedding import create_embedding
-
+from scripts.reddit_algorithms import calculate_best_score
 
 # For using OpenAI to generate query embedding
 # results = search_redis(redis_client, 'modern art in Europe', k=10)
