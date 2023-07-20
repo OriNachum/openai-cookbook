@@ -50,20 +50,21 @@ def search_redis(
     #         score = 1 - float(article.vector_score)
     #         print(f"{i}. {article.question} (Score: {round(score ,3) })")
 
-    # calculate the score for each result and store it in the result
+
+    # calculate the score for each result and store it in a separate list
+    scores = []
+    
     for result in results.docs:
         upvotes = get_document_attribute(result, 'upvotes')
         downvotes = get_document_attribute(result, 'downvotes')
-        result['score'] = calculate_best_score(upvotes, downvotes)
-
+        score = calculate_best_score(upvotes, downvotes)
+        scores.append(score)
+    
     # sort the results by the calculated score
-    results.docs.sort(key=lambda x: x['score'], reverse=True)
-
-    # if print_results:
-    #     for i, article in enumerate(results.docs):
-    #         score = 1 - float(article.vector_score)
-    #         print(f"{i}. {article.question} (Score: {round(score ,3) })")
-    return results.docs
+    sorted_indices = np.argsort(scores)[::-1]  # get the indices that would sort the scores in descending order
+    sorted_results = [results.docs[i] for i in sorted_indices]  # sort the results using the sorted indices
+    
+    return sorted_results #, scores
 
 # Vector search 
 # =============
