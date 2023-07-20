@@ -47,7 +47,10 @@ def search_redis(
 
     # calculate the score for each result and store it in the result
     for result in results.docs:
-        result['score'] = calculate_best_score(result['upvotes'], result['downvotes'])
+        upvotes = result.get('upvotes', 0)
+        downvotes = result.get('downvotes', 0)
+
+        result['score'] = calculate_best_score(upvotes, downvotes)
 
     # sort the results by the calculated score
     results.docs.sort(key=lambda x: x['score'], reverse=True)
