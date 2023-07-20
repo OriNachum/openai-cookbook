@@ -11,6 +11,11 @@ from scripts.reddit_algorithms import calculate_best_score
 # For using OpenAI to generate query embedding
 # results = search_redis(redis_client, 'modern art in Europe', k=10)
 # Wikipedia usage examples below
+def get_document_attribute(document, attribute, default=0):
+    try:
+        return getattr(document, attribute)
+    except AttributeError:
+        return default
 
 def search_redis(
     redis_client: redis.Redis,
@@ -47,9 +52,8 @@ def search_redis(
 
     # calculate the score for each result and store it in the result
     for result in results.docs:
-        upvotes = result.get('upvotes', 0)
-        downvotes = result.get('downvotes', 0)
-
+        upvotes = get_document_attribute(result, 'upvotes')
+        downvotes = get_document_attribute(result, 'downvotes')
         result['score'] = calculate_best_score(upvotes, downvotes)
 
     # sort the results by the calculated score
