@@ -1,6 +1,7 @@
 import redis
 import json
 import logging
+import hashlib
 
 from datetime import date
 from scripts.add_embeddings_to_csv import add_embeddings_to_csv
