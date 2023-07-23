@@ -42,21 +42,19 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
 
 logging.basicConfig(level=logging.INFO)
 
-def check_record_exists(redis_client: redis.Redis, record: NewRecord, index_name: str) -> bool:
-    key_attribute = "question"
-    key_value = json.dumps(getattr(record, key_attribute))
-    key_value = key_value.strip('"')  # Remove the double quotes
-    # Generate the search query
-    search_query = f'@{key_attribute}:"{key_value}"'
-    logging.info(f'Search query: {search_query}')
-    # Search the index for the given key_value
-    results = redis_client.ft(index_name).search(search_query)
-    return len(results.docs) > 0
-
+def hash_record(record: NewRecord) -> str:
+    record_dict = record.dict()  # Convert the record to a dict
+    record_json = json.dumps(record_dict, sort_keys=True)  # Convert the dict to a JSON string
+    record_hash = hashlib.sha256(record_json.encode()).hexdigest()  # Hash the JSON string
+    return record_hash
 
 def add_records(redis_client: redis.Redis, records: List[NewRecord]):
-    # Filter out the existing records
-    new_records = [record for record in records if not check_record_exists(redis_client, record, "embeddings-index")]
+    new_records = []
+    for record in records:
+        record_hash = hash_record(record)
+        if not redis_client.exists(record_hash):
+            new_records.append(record)
+            redis_client.set(record_hash, json.dumps(record.dict()))
 
     if not new_records:
         print("No new records to add.")
@@ -66,14 +64,7 @@ def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     with open(tempfilePath, 'w') as file:
         pass
 
-    # Sanitize the records before writing to the CSV
-    sanitized_records = []
-    for record in new_records:
-        sanitized_record = record.copy()
-        sanitized_record.question = json.dumps(record.question).strip('"')  # Remove the extra quotes
-        sanitized_records.append(sanitized_record)
-
-    convert_newrecordlist_to_csv(sanitized_records, tempfilePath)
+    convert_newrecordlist_to_csv(new_records, tempfilePath)
     add_embeddings_to_csv(tempfilePath)
 
     # Generate embeddings for each record
