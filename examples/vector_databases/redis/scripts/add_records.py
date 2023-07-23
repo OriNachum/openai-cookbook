@@ -1,5 +1,7 @@
 import redis
 import json
+import logging
+
 from datetime import date
 from scripts.add_embeddings_to_csv import add_embeddings_to_csv
 from scripts.convert_newrecordlist_to_csv import convert_newrecordlist_to_csv
@@ -38,12 +40,19 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
         redis_client.set(vector_id_key, vector_id)
     return vector_id
 
+logging.basicConfig(level=logging.INFO)
+
 def check_record_exists(redis_client: redis.Redis, record: NewRecord, index_name: str) -> bool:
     key_attribute = "question"
     key_value = json.dumps(getattr(record, key_attribute))
+    key_value = key_value.strip('"')  # Remove the double quotes
+    # Generate the search query
+    search_query = f'@{key_attribute}:"{key_value}"'
+    logging.info(f'Search query: {search_query}')
     # Search the index for the given key_value
-    results = redis_client.ft(index_name).search(f'@{key_attribute}:{key_value}')
+    results = redis_client.ft(index_name).search(search_query)
     return len(results.docs) > 0
+
 
 def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     # Filter out the existing records
@@ -61,7 +70,7 @@ def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     sanitized_records = []
     for record in new_records:
         sanitized_record = record.copy()
-        sanitized_record.question = json.dumps(record.question)
+        sanitized_record.question = json.dumps(record.question).strip('"')  # Remove the extra quotes
         sanitized_records.append(sanitized_record)
 
     convert_newrecordlist_to_csv(sanitized_records, tempfilePath)
