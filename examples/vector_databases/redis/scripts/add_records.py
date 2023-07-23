@@ -40,8 +40,9 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
 def check_record_exists(redis_client: redis.Redis, record: NewRecord, index_name: str) -> bool:
     key_attribute = "question"
     key_value = getattr(record, key_attribute)
-    existing_record = redis_client.ft(index_name).get(key_value)
-    return existing_record is not None
+    # Search the index for the given key_value
+    results = redis_client.ft(index_name).search(f'@{key_attribute}:"{key_value}"')
+    return len(results.docs) > 0
 
 def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     # Filter out the existing records
