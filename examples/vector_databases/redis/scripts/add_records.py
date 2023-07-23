@@ -52,7 +52,6 @@ def add_records(redis_client: redis.Redis, records: List[NewRecord]):
         question_hash = hash_string(record.question)
         if not redis_client.exists(question_hash):
             new_records.append(record)
-            redis_client.set(question_hash, record.question)
 
     if not new_records:
         print("No new records to add.")
