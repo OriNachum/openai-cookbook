@@ -1,4 +1,5 @@
 import redis
+import json
 from datetime import date
 from scripts.add_embeddings_to_csv import add_embeddings_to_csv
 from scripts.convert_newrecordlist_to_csv import convert_newrecordlist_to_csv
