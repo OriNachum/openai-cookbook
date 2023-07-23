@@ -107,7 +107,7 @@ async def delete_record_endpoint(record: DeleteRecord):
     return {"detail": "Record deleted"}
 
 @app.get("/questions/{question}")
-async def search(question: str, k: int = Query(3, ge=1)):
+async def search(question: str, k: int = Query(10, ge=1)):
     redis_host = "localhost"  # replace with your Redis ",host
     redis_port = 6379         # replace with your Redis port
     redis_password = ""       # replace with your Redis password if any
