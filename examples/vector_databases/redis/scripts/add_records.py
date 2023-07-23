@@ -26,8 +26,6 @@ class NewRecord(BaseModel):
     companyIndustry: str
     conversationDate: date
 
-
-
 def get_next_vector_id(redis_client: redis.Redis) -> int:
     vector_id_key = "vector_id_counter"
     vector_id = redis_client.get(vector_id_key)
@@ -39,15 +37,29 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
         redis_client.set(vector_id_key, vector_id)
     return vector_id
 
+def check_record_exists(redis_client: redis.Redis, record: NewRecord, index_name: str) -> bool:
+    key_attribute = "question"
+    key_value = getattr(record, key_attribute)
+    existing_record = redis_client.ft(index_name).get(key_value)
+    return existing_record is not None
 
-def add_records(redis_client: redis.Redis, records: List[NewRecord]):
-    tempfilePath="/home/ec2-user/git/openai-cookbook/temp.csv"
+def add_records(redis_client: redis.Redis, records: List[NewRecord], index_name: str):
+    # Filter out the existing records
+    new_records = [record for record in records if not check_record_exists(redis_client, record, index_name)]
+
+    if not new_records:
+        print("No new records to add.")
+        return
+
+    tempfilePath = "/home/ec2-user/git/openai-cookbook/temp.csv"
     with open(tempfilePath, 'w') as file:
         pass
-    convert_newrecordlist_to_csv(records, tempfilePath)
+
+    convert_newrecordlist_to_csv(new_records, tempfilePath)
     add_embeddings_to_csv(tempfilePath)
+
     # Generate embeddings for each record
     PREFIX = "doc"  # prefix for the document keys
-    data = nbutils.read_wikipedia_data("/home/ec2-user/git/openai-cookbook/","temp")
+    data = nbutils.read_wikipedia_data("/home/ec2-user/git/openai-cookbook/", "temp")
 
     index_documents(redis_client, PREFIX, data)
