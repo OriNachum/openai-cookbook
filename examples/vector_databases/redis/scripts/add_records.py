@@ -39,9 +39,9 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
 
 def check_record_exists(redis_client: redis.Redis, record: NewRecord, index_name: str) -> bool:
     key_attribute = "question"
-    key_value = getattr(record, key_attribute)
+    key_value = json.dumps(getattr(record, key_attribute))
     # Search the index for the given key_value
-    results = redis_client.ft(index_name).search(f'@{key_attribute}:"{key_value}"')
+    results = redis_client.ft(index_name).search(f'@{key_attribute}:{key_value}')
     return len(results.docs) > 0
 
 def add_records(redis_client: redis.Redis, records: List[NewRecord]):
@@ -56,7 +56,14 @@ def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     with open(tempfilePath, 'w') as file:
         pass
 
-    convert_newrecordlist_to_csv(new_records, tempfilePath)
+    # Sanitize the records before writing to the CSV
+    sanitized_records = []
+    for record in new_records:
+        sanitized_record = record.copy()
+        sanitized_record.question = json.dumps(record.question)
+        sanitized_records.append(sanitized_record)
+
+    convert_newrecordlist_to_csv(sanitized_records, tempfilePath)
     add_embeddings_to_csv(tempfilePath)
 
     # Generate embeddings for each record
