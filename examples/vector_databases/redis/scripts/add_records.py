@@ -43,9 +43,9 @@ def check_record_exists(redis_client: redis.Redis, record: NewRecord, index_name
     existing_record = redis_client.ft(index_name).get(key_value)
     return existing_record is not None
 
-def add_records(redis_client: redis.Redis, records: List[NewRecord], index_name: str):
+def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     # Filter out the existing records
-    new_records = [record for record in records if not check_record_exists(redis_client, record, index_name)]
+    new_records = [record for record in records if not check_record_exists(redis_client, record, "embeddings-index")]
 
     if not new_records:
         print("No new records to add.")
