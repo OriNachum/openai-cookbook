@@ -42,19 +42,16 @@ def get_next_vector_id(redis_client: redis.Redis) -> int:
 
 logging.basicConfig(level=logging.INFO)
 
-def hash_record(record: NewRecord) -> str:
-    record_dict = record.dict()  # Convert the record to a dict
-    record_json = json.dumps(record_dict, sort_keys=True)  # Convert the dict to a JSON string
-    record_hash = hashlib.sha256(record_json.encode()).hexdigest()  # Hash the JSON string
-    return record_hash
+def hash_string(s: str) -> str:
+    return hashlib.sha256(s.encode()).hexdigest()
 
 def add_records(redis_client: redis.Redis, records: List[NewRecord]):
     new_records = []
     for record in records:
-        record_hash = hash_record(record)
-        if not redis_client.exists(record_hash):
+        question_hash = hash_string(record.question)
+        if not redis_client.exists(question_hash):
             new_records.append(record)
-            redis_client.set(record_hash, json.dumps(record.dict()))
+            redis_client.set(question_hash, record.question)
 
     if not new_records:
         print("No new records to add.")
