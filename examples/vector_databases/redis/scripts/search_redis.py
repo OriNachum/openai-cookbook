@@ -53,11 +53,12 @@ def search_redis(
 
     # calculate the score for each result and store it in a separate list
     scores = []
-    
+        
     for result in results.docs:
         upvotes = get_document_attribute(result, 'upvotes')
         downvotes = get_document_attribute(result, 'downvotes')
-        score = calculate_best_score(upvotes, downvotes)
+        vector_score = float(get_document_attribute(result, 'vector_score'))
+        score = calculate_best_score(upvotes, downvotes) * vector_score  # multiply the score with the vector score
         scores.append(score)
     
     # sort the results by the calculated score
