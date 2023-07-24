@@ -20,6 +20,12 @@ class SearchQuery(BaseModel):
     question: str
     k: int = 5
 
+class AskQuery(BaseModel):
+    query: str
+    system_prompt: str = None
+    gpt_model: str = None
+    temperature: float = 0.3
+
 # Load environment variables from .env file
 env_vars = dotenv_values('.env')
 
@@ -136,5 +142,10 @@ async def search(search_query: SearchQuery):
 @app.get("/ask/{query}")
 async def ask(query: str, system_prompt: str = None, gpt_model: str = None, temperature: float = 0.3):
     response = complete_prompt(query, system_prompt, gpt_model, temperature)
+    return {"response": response}
+
+@app.post("/ask/")
+async def ask(ask_query: AskQuery):
+    response = complete_prompt(ask_query.query, ask_query.system_prompt, ask_query.gpt_model, ask_query.temperature)
     return {"response": response}
 
