@@ -10,3 +10,4 @@ python-dotenv
 uuid
 pyodbc
 asyncio
+tiktoken
