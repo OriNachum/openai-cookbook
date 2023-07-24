@@ -1,9 +1,6 @@
 import openai
 from pydantic import BaseModel
 
-# Initialize a tokenizer
-tokenizer = Tokenizer()
-
 # Set the default model
 GPT_DEFAULT_MODEL = 'gpt-3.5-turbo'
 GPT_DEFAULT_SYSTEM_PROMPT = 'You are an AI model that answers questions.'
