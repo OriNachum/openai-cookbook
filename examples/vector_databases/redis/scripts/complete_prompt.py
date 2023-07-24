@@ -1,5 +1,10 @@
 import openai
+from tiktoken import Tokenizer
+
 from pydantic import BaseModel
+
+# Initialize a tokenizer
+tokenizer = Tokenizer()
 
 # Set the default model
 GPT_DEFAULT_MODEL = 'gpt-3.5-turbo'
@@ -11,6 +16,11 @@ def complete_prompt(query: str, system_prompt: str, gpt_model: str, temperature:
     
     # Set the system prompt based on the input or use the default
     system_prompt = system_prompt or GPT_DEFAULT_SYSTEM_PROMPT
+
+    # Estimate the total number of tokens
+    num_tokens = len(list(tokenizer.tokenize(query))) + len(list(tokenizer.tokenize(system_prompt)))
+    if num_tokens > 4096 and gpt_model == GPT_DEFAULT_MODEL:
+        gpt_model = 'gpt-3.5-turbo-16k'
 
     response = openai.ChatCompletion.create(
         messages=[
