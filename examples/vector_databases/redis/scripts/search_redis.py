@@ -58,7 +58,7 @@ def search_redis(
         upvotes = get_document_attribute(result, 'upvotes')
         downvotes = get_document_attribute(result, 'downvotes')
         vector_score = float(get_document_attribute(result, 'vector_score'))
-        score = (1 + calculate_best_score(upvotes, downvotes)) * (1 - vector_score)  # multiply the score with the vector score
+        score = (100 + calculate_best_score(upvotes, downvotes)) * (1 - vector_score)  # multiply the score with the vector score
         scores.append(score)
     
     # sort the results by the calculated score
