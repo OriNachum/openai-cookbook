@@ -15,6 +15,11 @@ import openai
 
 from dotenv import dotenv_values
 
+# Define a Pydantic model for the request body
+class SearchQuery(BaseModel):
+    question: str
+    k: int = 5
+
 # Load environment variables from .env file
 env_vars = dotenv_values('.env')
 
@@ -115,6 +120,17 @@ async def search(question: str, k: int = Query(5, ge=1)):
     redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
 
     results = search_redis(redis_client, question, vector_field='question_vector', k=k)  # call your search method
+    return results
+
+@app.post("/questions/")
+async def search(search_query: SearchQuery):
+    redis_host = "localhost"  # replace with your Redis host
+    redis_port = 6379         # replace with your Redis port
+    redis_password = ""       # replace with your Redis password if any
+
+    redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
+
+    results = search_redis(redis_client, search_query.question, vector_field='question_vector', k=search_query.k)  # call your search method
     return results
 
 @app.get("/ask/{query}")
