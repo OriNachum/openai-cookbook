@@ -5,7 +5,7 @@ import time
 
 def create_embedding(user_query: str, max_retries: int = 3) -> list:
     # Creates embedding vector from user query
-    system_prompt = "You are a data scientist master in rephrasing text before running embedding generation for a vectorDB. You will get a part of a conversation or FAQ, and you will rephrase the sentence with weights on the most important parts of it. Make your best to phrase the content to keep the important information in and noise out."
+    system_prompt = "Assume the role of a data scientist expert in text rephrasing, geared towards optimizing embedding generation for a vector database. You will receive snippets from conversations or FAQs. Your task is to rephrase the sentences, emphasizing the most crucial information. Strive to phrase the content such that it retains vital information while minimizing noise."
     gpt_model = "gpt-3.5-turbo" #"gpt-4"
     manipulated_query = complete_prompt(user_query, system_prompt, gpt_model, 0.05)
     #manipulated_query = user_query
