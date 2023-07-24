@@ -1,4 +1,6 @@
 import openai
+import tiktoken
+
 from pydantic import BaseModel
 
 # Set the default model
