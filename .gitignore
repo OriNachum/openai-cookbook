@@ -132,3 +132,6 @@ dmypy.json
 *transactions*.jsonl
 /examples/data/transactions*
 *.DS_Store
+***/rdb_data/**
+***/rdb_data_meta_kv/**
+***/.minio.sys/**

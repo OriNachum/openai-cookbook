@@ -1,0 +1,6 @@
+Flask
+openai
+pymilvus
+tiktoken
+pydantic
+flasgger
