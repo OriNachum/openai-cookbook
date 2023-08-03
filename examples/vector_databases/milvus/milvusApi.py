@@ -5,7 +5,7 @@ from embedding_service import EmbeddingService
 app = Flask(__name__)
 swagger = Swagger(app)
 
-embedding_service = EmbeddingService("my_collection")
+embedding_service = EmbeddingService("TipGPT_Question")
 
 @app.route("/insert", methods=["POST"])
 def insert_records():
@@ -20,15 +20,17 @@ def insert_records():
         items:
             type: object
             properties:
-                title:
+                owner:
                     type: string
-                description:
+                question:
+                    type: string
+                answer:
                     type: string
     responses:
         200:
             description: Records inserted successfully
     """
-    records = request.json.get("records")
+    records = request.json["records"]
     embedding_service.insert_records(records)
     return jsonify({"message": "Records inserted successfully"}), 200
 
@@ -54,6 +56,7 @@ def search_records():
     query = request.json.get("query")
     top_k = request.json.get("top_k", 10)
     results = embedding_service.search_records(query, top_k)
+
     return jsonify({"results": results}), 200
 
 if __name__ == "__main__":
