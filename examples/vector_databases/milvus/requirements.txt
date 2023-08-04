@@ -4,3 +4,4 @@ pymilvus
 tiktoken
 pydantic
 flasgger
+dotenv

@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
 from flasgger import Swagger
 from embedding_service import EmbeddingService
+from dotenv import load_dotenv
+
+load_dotenv() 
 
 app = Flask(__name__)
 swagger = Swagger(app)

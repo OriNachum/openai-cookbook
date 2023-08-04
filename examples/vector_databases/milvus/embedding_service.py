@@ -43,15 +43,6 @@ class EmbeddingService:
             self.collection = Collection(name=self.collection_name)
             self.collection.load()
 
-    def generate_embeddings(self, text):
-        # Pre-phrase the text
-        text = self.pre_phrase(text)
-        
-        # Generate embeddings using OpenAI
-        embeddings = create_embedding(text)
-        
-        return embeddings
-
     def pre_phrase(self, text):
         # Define a system prompt for pre-phrasing
         prompt = "As a data scientist specializing in text rephrasing for embedding generation, you are tasked with processing snippets from conversations or FAQs. Your goal is to rephrase these sentences to highlight the most critical information. Aim for a rephrase that maintains essential details while minimizing irrelevant noise. Remember, the ultimate goal is to optimize these phrases for embedding generation within a vector database."
@@ -63,10 +54,10 @@ class EmbeddingService:
 
     def insert_records(self, records):
         # Generate embeddings for all records
-        question_embeddings = [self.generate_embeddings(record["question"]) for record in records]
+        question_embeddings = [create_embedding(record["question"]) for record in records]
         #answer_embeddings = [self.generate_embeddings(record["answer"]) for record in records]
         #full_embeddings = [self.generate_embeddings('Q:' + record["question"] + ';;; A: ' + record["answer"]) for record in records]
-
+        owners = [record["owner"] for record in records]
         questions = [record["question"] for record in records]
         answers = [record["answer"] for record in records]
         
@@ -78,6 +69,7 @@ class EmbeddingService:
         print(f"Embeddings: {len(question_embeddings)}, Embedding Length: {len(question_embeddings[0])}, Type: {type(question_embeddings[0][0])}")
         
         data = []
+        data.append(owners)
         data.append(questions)
         data.append(answers)
         data.append(question_embeddings)
@@ -102,8 +94,9 @@ class EmbeddingService:
 
     def search_records(self, query, top_k):
         # Generate embeddings for the query
-        query_embeddings = self.generate_embeddings(query)
+        query_embeddings = create_embedding(query)
         
+        # Consider saving the new embedding if couldn't find in db, give initial data: "I don't know, this requires an answer"
         # Search for similar records in Milvus
         search_results_by_questions = self.collection.search([query_embeddings], "question_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['question', 'answer'], using='default')
         #search_results_by_answers = self.collection.search([query_embeddings], "answer_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['question', 'answer'], using='default')
