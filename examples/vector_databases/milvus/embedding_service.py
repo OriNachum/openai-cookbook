@@ -84,7 +84,7 @@ class EmbeddingService:
         for hit in search_results_by_questions[0]:
             record = {
                 "id": hit.id,
-                "owner": hit.owner,
+                "owner": hit.entity.get('owner'),
                 "score": hit.score,
                 "question": hit.entity.get('question'),
                 "answer": hit.entity.get('answer')
