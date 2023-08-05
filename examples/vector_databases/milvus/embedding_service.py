@@ -82,15 +82,16 @@ class EmbeddingService:
 
     def append_results(self, search_results_by_questions, results):
         for hit in search_results_by_questions[0]:
-            record = {
-                "id": hit.id,
-                "owner": hit.entity.get('owner'),
-                "score": hit.score,
-                "question": hit.entity.get('question'),
-                "answer": hit.entity.get('answer')
-            }
-            if not any(res['question'] == record['question'] and res['owner'] == record['owner'] for res in results):
-                results.append(record)
+            if hit.score >= 0.77:  # Add this line to filter results by score
+                record = {
+                    "id": hit.id,
+                    "owner": hit.entity.get('owner'),
+                    "score": hit.score,
+                    "question": hit.entity.get('question'),
+                    "answer": hit.entity.get('answer')
+                }
+                if not any(res['question'] == record['question'] and res['owner'] == record['owner'] for res in results):
+                    results.append(record)
 
     def search_records(self, query, top_k):
         # Generate embeddings for the query
