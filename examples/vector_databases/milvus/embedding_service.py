@@ -109,6 +109,9 @@ class EmbeddingService:
         #self.append_results(search_results_by_answers, results)
         #self.append_results(search_results_by_full, results)
 
+        if not results:
+            return ["I don't know"]
+        
         results.sort(key=lambda x: x['score'], reverse=True)
         best_results = results[:top_k]
 
