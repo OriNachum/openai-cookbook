@@ -83,7 +83,7 @@ class EmbeddingService:
     def append_results(self, search_results_by_questions, results):
         for hit in search_results_by_questions[0]:
             print(f"hit: {hit.score}, owner: {hit.entity.get('owner')}, question: {hit.entity.get('question')}, answer: {hit.entity.get('answer')}")
-            if hit.score >= 0.77:  # Add this line to filter results by score
+            if (1-hit.score) >= 0.77:  # Add this line to filter results by score
                 record = {
                     "id": hit.id,
                     "owner": hit.entity.get('owner'),
