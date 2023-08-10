@@ -8,7 +8,17 @@ load_dotenv()
 app = Flask(__name__)
 swagger = Swagger(app)
 
-embedding_service = EmbeddingService("TipGPT_Question")
+entities_collection_name = "TipGPT_Entities"
+answer_embedding_collection_name = "TipGPT_AnswerEmbeddings"
+question_embedding_collection_name = "TipGPT_QuestionEmbeddings"
+full_embedding_collection_name = "TipGPT_FullEmbeddings"
+
+embedding_service = EmbeddingService(
+    entities_collection_name,
+    answer_embedding_collection_name,
+    question_embedding_collection_name,
+    full_embedding_collection_name
+)
 
 @app.route("/insert", methods=["POST"])
 def insert_records():
