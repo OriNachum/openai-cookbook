@@ -7,16 +7,23 @@ from scripts.create_embedding import create_embedding
 
 class EmbeddingService:
     def _initialize_embedding_collection(self, collection_name, description):
-        return self._initialize_collection(
-            collection_name,
-            fields=[
-                FieldSchema(name='id', dtype=DataType.INT64, is_primary=True, auto_id=True),
-                FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, dim=1536),
-                FieldSchema(name='entity_id', dtype=DataType.INT64)
-            ],
-            description=description,
-            auto_id=True
-        )
+        if not utility.has_collection(collection_name):
+            collection = self._initialize_collection(
+                collection_name,
+                fields=[
+                    FieldSchema(name='id', dtype=DataType.INT64, is_primary=True, auto_id=True),
+                    FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, dim=1536),
+                    FieldSchema(name='entity_id', dtype=DataType.INT64)
+                ],
+                description=description,
+                auto_id=True
+            )
+        else:
+            # If the collection already exists, just load it
+            collection = Collection(name=collection_name)
+            collection.load()
+        return collection
+
 
     def __init__(self, entities_collection_name, answer_embedding_collection_name, question_embedding_collection_name, full_embedding_collection_name):
         # Initialize Milvus client
