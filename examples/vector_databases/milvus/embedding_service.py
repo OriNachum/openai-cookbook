@@ -6,42 +6,72 @@ from scripts.complete_prompt import complete_prompt
 from scripts.create_embedding import create_embedding
 
 class EmbeddingService:
-    def __init__(self, collection_name):
+    def _initialize_embedding_collection(self, collection_name, description):
+        return self._initialize_collection(
+            collection_name,
+            fields=[
+                FieldSchema(name='id', dtype=DataType.INT64, is_primary=True, auto_id=True),
+                FieldSchema(name='embedding', dtype=DataType.FLOAT_VECTOR, dim=1536),
+                FieldSchema(name='entity_id', dtype=DataType.INT64)
+            ],
+            description=description,
+            auto_id=True
+        )
+
+    def __init__(self, entities_collection_name, answer_embedding_collection_name, question_embedding_collection_name, full_embedding_collection_name):
         # Initialize Milvus client
         connections.connect(alias='default', host='localhost', port='19530')
-        
-        # Collection (database) name
-        self.collection_name = collection_name
 
-        # Check if collection exists, if not create one
-        if not utility.has_collection(self.collection_name):
-            fields = [
+        # Define Collection Names
+        self.entities_collection_name = entities_collection_name
+        self.answer_embedding_collection_name = answer_embedding_collection_name
+        self.question_embedding_collection_name = question_embedding_collection_name
+        self.full_embedding_collection_name = full_embedding_collection_name
+
+        # Initialize Entities Collection
+        self.entities_collection = self._initialize_collection(
+            self.entities_collection_name,
+            fields=[
                 FieldSchema(name='id', dtype=DataType.INT64, is_primary=True, auto_id=True),
                 FieldSchema(name='owner', dtype=DataType.VARCHAR, max_length=100),
                 FieldSchema(name='question', dtype=DataType.VARCHAR, max_length=64000),
-                FieldSchema(name='answer', dtype=DataType.VARCHAR, max_length=64000),
-                FieldSchema(name='question_embedding', dtype=DataType.FLOAT_VECTOR, dim=1536),
-                #FieldSchema(name='answer_embedding', dtype=DataType.FLOAT_VECTOR, dim=1536),
-                #FieldSchema(name='full_embedding', dtype=DataType.FLOAT_VECTOR, dim=1536)
-            ]
-            schema = CollectionSchema(fields=fields, description="Book Collection", auto_id=True)
-            self.collection = Collection(name=self.collection_name, schema=schema, using='default')
+                FieldSchema(name='answer', dtype=DataType.VARCHAR, max_length=64000)
+            ],
+            description="Entities Collection",
+            auto_id=True
+        )
 
-            # Create the index on the collection and load it.
+        # Initialize Answer Embedding Collection
+        self.answer_embedding_collection = self._initialize_embedding_collection(
+            self.answer_embedding_collection_name, "Answer Embedding Collection")
+
+        # Initialize Question Embedding Collection
+        self.question_embedding_collection = self._initialize_embedding_collection(
+            self.question_embedding_collection_name, "Question Embedding Collection")
+
+        # Initialize Full Embedding Collection
+        self.full_embedding_collection = self._initialize_embedding_collection(
+            self.full_embedding_collection_name, "Full Embedding Collection")
+
+
+    def _initialize_collection(self, collection_name, fields, description, auto_id):
+        # Check if collection exists, if not create one
+        if not utility.has_collection(collection_name):
+            schema = CollectionSchema(fields=fields, description=description, auto_id=auto_id)
+            collection = Collection(name=collection_name, schema=schema, using='default')
+            # Create the index on the collection and load it
             index_param = {
                 'metric_type': 'L2',
                 'index_type': 'HNSW',
                 'params': {'M': 8, 'efConstruction': 64}
             }
-            self.collection.create_index("question_embedding", index_param)
-            #self.collection.create_index("answer_embedding", index_param)
-            #self.collection.create_index("full_embedding", index_param)
-
-            self.collection.load()
+            collection.create_index("embedding", index_param)
+            collection.load()
         else:
             # If the collection already exists, just load it
-            self.collection = Collection(name=self.collection_name)
-            self.collection.load()
+            collection = Collection(name=collection_name)
+            collection.load()
+        return collection
 
     def pre_phrase(self, text):
         # Define a system prompt for pre-phrasing
@@ -49,47 +79,42 @@ class EmbeddingService:
 
         # Pre-phrase the text
         text = complete_prompt(text, prompt, "gpt-3.5-turbo", 0.05)
-        
         return text
 
     def insert_records(self, records):
-        # Generate embeddings for all records
-        question_embeddings = [create_embedding(record["question"]) for record in records]
-        #answer_embeddings = [self.generate_embeddings(record["answer"]) for record in records]
-        #full_embeddings = [self.generate_embeddings('Q:' + record["question"] + ';;; A: ' + record["answer"]) for record in records]
+        # Insert entities
+        entity_ids = self._insert_entities(records)
+
+        # Insert Embeddings
+        self._insert_embeddings(records, entity_ids, self.question_embedding_collection, lambda record: record["question"])
+        self._insert_embeddings(records, entity_ids, self.answer_embedding_collection, lambda record: record["answer"])
+        self._insert_embeddings(records, entity_ids, self.full_embedding_collection, lambda record: 'Q:' + record["question"] + ';;; A: ' + record["answer"])
+
+    def _insert_entities(self, records):
         owners = [record["owner"] for record in records]
         questions = [record["question"] for record in records]
         answers = [record["answer"] for record in records]
-        
-        print(f"Dimensions of embedding for record {question_embeddings[0]}: {len(question_embeddings[0])}")
-        print(f"Data type of first element in embedding: {type(question_embeddings[0][0])}")
+        entity_data = [owners, questions, answers]
+        entity_ids = self.entities_collection.insert(entity_data, using='default')
+        return entity_ids
 
-        print(f"Questions: {questions}, Type: {type(questions[0])}")
-        print(f"Answers: {answers}, Type: {type(answers[0])}")
-        print(f"Embeddings: {len(question_embeddings)}, Embedding Length: {len(question_embeddings[0])}, Type: {type(question_embeddings[0][0])}")
-        
-        data = []
-        data.append(owners)
-        data.append(questions)
-        data.append(answers)
-        data.append(question_embeddings)
-        #data.append(answer_embeddings)
-        #data.append(full_embeddings)
+    def _insert_embeddings(self, records, entity_ids, collection, text_func):
+        embeddings = [create_embedding(text_func(record)) for record in records]
+        embedding_data = [embeddings, entity_ids]
+        collection.insert(embedding_data, using='default')
 
-        # Insert records into Milvus
-        #self.collection.insert({"title": titles, "description": descriptions, "embedding": embeddings}, using='default')
-        self.collection.insert(data, using='default')
-
-    def append_results(self, search_results_by_questions, results):
-        for hit in search_results_by_questions[0]:
-            print(f"hit: {hit.score}, owner: {hit.entity.get('owner')}, question: {hit.entity.get('question')}, answer: {hit.entity.get('answer')}")
-            if (1-hit.score) >= 0.77:  # Add this line to filter results by score
+    def append_results(self, search_results, results):
+        for hit in search_results[0]:
+            print(f"hit: {hit.score}, entity_id: {hit.entity.get('entity_id')}")
+            if (1 - hit.score) >= 0.77:  # Add this line to filter results by score
+                entity = self.entities_collection.get(hit.entity.get('entity_id'), using='default')
                 record = {
                     "id": hit.id,
-                    "owner": hit.entity.get('owner'),
+                    "entity_id": hit.entity.get('entity_id'),
+                    "owner": entity.entity.get('owner'),
                     "score": hit.score,
-                    "question": hit.entity.get('question'),
-                    "answer": hit.entity.get('answer')
+                    "question": entity.entity.get('question'),
+                    "answer": entity.entity.get('answer')
                 }
                 if not any(res['question'] == record['question'] and res['owner'] == record['owner'] for res in results):
                     results.append(record)
@@ -97,32 +122,15 @@ class EmbeddingService:
     def search_records(self, query, top_k):
         # Generate embeddings for the query
         query_embeddings = create_embedding(query)
-        
+
         # Consider saving the new embedding if couldn't find in db, give initial data: "I don't know, this requires an answer"
         # Search for similar records in Milvus
         print(f"searching for: {query}")
-        search_results_by_questions = self.collection.search([query_embeddings], "question_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['owner', 'question', 'answer'], using='default')
-        #search_results_by_answers = self.collection.search([query_embeddings], "answer_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['question', 'answer'], using='default')
-        #search_results_by_full = self.collection.search([query_embeddings], "full_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['question', 'answer'], using='default')
+        search_results_by_questions = self._search_embedding_collection(self.question_embedding_collection, query_embeddings, top_k)
+        search_results_by_answers = self._search_embedding_collection(self.answer_embedding_collection, query_embeddings, top_k)
+        search_results_by_full = self._search_embedding_collection(self.full_embedding_collection, query_embeddings, top_k)
         print(f"found: {len(search_results_by_questions)} results")
 
         # Convert search results to a format that can be serialized to JSON
         results = []
-        self.append_results(search_results_by_questions, results)
-        #self.append_results(search_results_by_answers, results)
-        #self.append_results(search_results_by_full, results)
-        print(f"left with: {len(results)} results")
-
-        if not results:
-            return ["I don't know"]
-        
-        results.sort(key=lambda x: x['score'], reverse=True)
-        best_results = results[:top_k]
-
-        # If there are results, use them to generate a prompt for GPT-3.5-turbo
-        system_prompt = "As an AI, your task is to answer the query using only the provided information. Stick to the facts, avoid making assumptions or adding personal interpretations, and do not use any previously stored data."
-        data = "\\n".join([f'Q: {result["question"]}: {result["answer"]}' for result in best_results])
-        data = f'Please answer the following question based only the Answers that following it. Do not answer based on any other source. Q: {query}\\n Answers:\\n{data}'
-        answer = complete_prompt(data, system_prompt, "gpt-3.5-turbo", 0.05)
-        return [answer]
-
+       
