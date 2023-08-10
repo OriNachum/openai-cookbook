@@ -100,7 +100,7 @@ class EmbeddingService:
         
         # Consider saving the new embedding if couldn't find in db, give initial data: "I don't know, this requires an answer"
         # Search for similar records in Milvus
-        search_results_by_questions = self.collection.search([query_embeddings], "question_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['question', 'answer'], using='default')
+        search_results_by_questions = self.collection.search([query_embeddings], "question_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['owner', 'question', 'answer'], using='default')
         #search_results_by_answers = self.collection.search([query_embeddings], "answer_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['question', 'answer'], using='default')
         #search_results_by_full = self.collection.search([query_embeddings], "full_embedding", param={"metric_type": "L2"},limit=top_k, output_fields=['question', 'answer'], using='default')
 
