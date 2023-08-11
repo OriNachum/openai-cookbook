@@ -134,4 +134,6 @@ dmypy.json
 *.DS_Store
 ***/rdb_data/**
 ***/rdb_data_meta_kv/**
-***/.minio.sys/**
+***/.minio.sys
+
+***/volumes/*
